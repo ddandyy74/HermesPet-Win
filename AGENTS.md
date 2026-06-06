@@ -9,7 +9,7 @@ Windows port of HermesPet (macOS desktop AI companion). The macOS source lives i
 
 ## Tech Stack
 
-- **Framework:** WPF (.NET 8) + C# 12
+- **Framework:** WPF (.NET 10) + C# 12
 - **MVVM:** CommunityToolkit.Mvvm (`[ObservableProperty]`, `[RelayCommand]`)
 - **Audio:** NAudio
 - **Storage:** JSON files in `%APPDATA%/HermesPet/`

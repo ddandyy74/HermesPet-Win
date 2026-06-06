@@ -9,7 +9,7 @@
 ### 安装工具
 
 ```powershell
-# 1. 安装 .NET 8 SDK
+# 1. 安装 .NET 10 SDK
 winget install Microsoft.DotNet.SDK.8
 
 # 2. 安装 Visual Studio 2022 Community（可选）
@@ -57,7 +57,7 @@ dotnet add package System.Text.Json --version 8.0.4
 1. 打开 Visual Studio 2022
 2. 创建新项目 → WPF 应用程序
 3. 项目名称：HermesPet
-4. 框架：.NET 8.0
+4. 框架：.NET 10.0
 5. 添加 NuGet 包：
    - CommunityToolkit.Mvvm
    - NAudio

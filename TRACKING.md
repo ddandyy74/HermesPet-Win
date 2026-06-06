@@ -29,7 +29,7 @@
 
 | ID | 任务 | 负责人 | 状态 | 备注 |
 |----|------|--------|------|------|
-| M1.1.1 | 创建 .NET 8 WPF 项目 | - | ✅ | `dotnet new wpf -n HermesPet -o src/HermesPet` |
+| M1.1.1 | 创建 .NET 10 WPF 项目 | - | ✅ | `dotnet new wpf -n HermesPet -o src/HermesPet` |
 | M1.1.2 | 添加 NuGet 包（CommunityToolkit.Mvvm, NAudio, System.Text.Json） | - | ✅ | 参考 QUICKSTART.md §2 |
 | M1.1.3 | 创建目录结构（Models/ ViewModels/ Views/ Services/ Windows/ Converters/ Helpers/ Resources/） | - | ✅ | 参考 DEVELOPMENT_GUIDE.md §3.3 |
 | M1.1.4 | 配置 .gitignore | - | ✅ | bin/ obj/ .vs/ *.user |
@@ -186,13 +186,14 @@
 | M3.3.6 | AI 模式切换 UI | ✅ | ConversationListControl 显示模式+连接状态 |
 | M3.3.7 | 转换器实现 | ✅ | ConnectionStatusToColorConverter + AgentModeToLabelConverter |
 
-### M3.4 提供商预设
+### M3.4 提供商预设 ✅ 已完成（2026-06-07）
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M3.4.1 | `Resources/Presets.json` | presets.json | ⬜ | 5 个提供商配置 |
-| M3.4.2 | 设置界面提供商配置 | ProviderPreset.swift | ⬜ | |
-| M3.4.3 | API Key 安全存储 | - | ⬜ | Windows 凭据管理器 |
+| M3.4.1 | `Models/ProviderPreset.cs` | presets.json | ✅ | 预设数据模型 |
+| M3.4.2 | `Resources/Presets.json` | presets.json | ✅ | 13 个提供商配置 |
+| M3.4.3 | `Services/PresetService.cs` | - | ✅ | 预设加载服务，支持嵌入资源 |
+| M3.4.4 | `Services/SecureStorageService.cs` | - | ✅ | Windows 凭据管理器 API Key 存储 |
 
 ### M3 验收检查清单
 
@@ -200,7 +201,7 @@
 - [x] 每个对话可绑定不同 AI 模式 ✅
 - [x] 所有 5 种 AI 模式可尝试连接 ✅
 - [x] 模型列表获取正常 ✅
-- [ ] 提供商切换无崩溃（M3.4 待实现）
+- [x] 提供商切换无崩溃 ✅（TDR-S01: API Key 安全存储）
 
 ---
 

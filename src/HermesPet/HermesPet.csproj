@@ -15,4 +15,15 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- 嵌入资源：预设配置文件 -->
+    <EmbeddedResource Include="Resources\Presets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <!-- 内容文件：运行时可编辑 -->
+    <Content Include="Resources\Presets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

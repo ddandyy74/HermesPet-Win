@@ -98,7 +98,7 @@ HermesPet 是一个桌面 AI 伴侣应用，最初为 macOS 设计，运行在 M
 ┌─────────────────────────────────────────────────────────┐
 │                    Windows 桌面应用                       │
 ├─────────────────────────────────────────────────────────┤
-│  UI 框架:     WPF (.NET 8) + MVVM                       │
+│  UI 框架:     WPF (.NET 10) + MVVM                       │
 │  语言:        C# 12                                     │
 │  状态管理:    CommunityToolkit.Mvvm                      │
 │  HTTP 客户端: HttpClient + SSE                          │
@@ -113,7 +113,7 @@ HermesPet 是一个桌面 AI 伴侣应用，最初为 macOS 设计，运行在 M
 
 ### 3.2 技术选型理由
 
-#### UI 框架：WPF (.NET 8)
+#### UI 框架：WPF (.NET 10)
 
 **选择理由：**
 - 成熟的 MVVM 模式支持
@@ -130,7 +130,7 @@ HermesPet 是一个桌面 AI 伴侣应用，最初为 macOS 设计，运行在 M
 #### HTTP 客户端：原生 HttpClient + SSE
 
 **选择理由：**
-- .NET 8 原生支持 SSE
+- .NET 10 原生支持 SSE
 - 无需额外依赖
 - 性能优秀
 
@@ -872,7 +872,7 @@ public class ScreenCaptureService
 
 **目标：** 可运行的基础聊天应用
 
-- [ ] 项目初始化（.NET 8 WPF）
+- [ ] 项目初始化（.NET 10 WPF）
 - [ ] 数据模型实现
 - [ ] AI 客户端基类 + OpenAI 兼容客户端
 - [ ] SSE 流式解析
@@ -954,7 +954,7 @@ public class ScreenCaptureService
 
 **背景：** 需要选择 Windows 桌面 UI 框架
 
-**决策：** 使用 WPF (.NET 8)
+**决策：** 使用 WPF (.NET 10)
 
 **理由：**
 - 成熟的 MVVM 生态
@@ -1234,7 +1234,7 @@ catch (Exception ex)
 ### 必需工具
 
 - Visual Studio 2022 或 JetBrains Rider
-- .NET 8 SDK
+- .NET 10 SDK
 - Windows 10 SDK (10.0.19041.0+)
 
 ### 推荐扩展
@@ -1249,7 +1249,7 @@ catch (Exception ex)
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

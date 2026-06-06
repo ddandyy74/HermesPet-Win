@@ -23,7 +23,7 @@
 ### M1.1 项目骨架（Day 1-2）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [x] .NET 8 WPF 项目创建（`src/HermesPet/HermesPet.csproj`）
+- [x] .NET 10 WPF 项目创建（`src/HermesPet/HermesPet.csproj`）
 - [x] CommunityToolkit.Mvvm + NAudio + System.Text.Json 包引用
 - [x] 项目目录结构：`Models/`、`ViewModels/`、`Views/`、`Services/`、`Converters/`、`Helpers/`、`Resources/`
 - [x] `App.xaml` + `App.xaml.cs` 启动入口
