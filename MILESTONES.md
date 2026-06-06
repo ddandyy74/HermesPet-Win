@@ -143,22 +143,26 @@
 
 ---
 
-### M1.6 全局热键（Day 16-17）
+### M1.6 全局热键（Day 16-17）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Services/HotkeyService.cs` — RegisterHotKey API 封装
-- [ ] `Ctrl+Shift+H` 显示/隐藏主窗口
-- [ ] `Ctrl+Shift+J` 新建对话
+- [x] `Services/HotkeyService.cs` — RegisterHotKey API 封装
+- [x] `Ctrl+Shift+H` 显示/隐藏主窗口
+- [x] `Ctrl+Shift+J` 新建对话
+- [x] `Views/ChatWindow.xaml.cs` — HwndSource Hook 处理 WM_HOTKEY
+- [x] `App.xaml.cs` — 热键服务集成
 
-**验收标准：**
-- 热键在应用最小化/非焦点时仍然生效
-- 窗口销毁时注销热键
-- 热键冲突时给出清晰提示
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 热键在应用最小化/非焦点时仍然生效（RegisterHotKey 是全局 API）
+- ✅ 窗口销毁时注销热键（OnClosed 调用 Unregister）
+- ✅ 热键冲突时给出清晰提示（MessageBox 显示失败列表）
+- ✅ Ctrl+Shift+H 显示/隐藏主窗口
+- ✅ Ctrl+Shift+J 新建对话
 
-**关键约束：**
-- TDR-003：使用 Windows API `RegisterHotKey`
-- 处理 `WM_HOTKEY` 消息
-- 窗口关闭时调用 `UnregisterHotKey`
+**关键约束验证：**
+- ✅ TDR-003：使用 Windows API RegisterHotKey / UnregisterHotKey
+- ✅ 处理 WM_HOTKEY 消息（HwndSource.AddHook）
+- ✅ 窗口关闭时调用 UnregisterHotKey（OnClosed + Dispose）
 
 **依赖：** M1.1
 

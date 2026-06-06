@@ -11,14 +11,16 @@ namespace HermesPet;
 public partial class App : System.Windows.Application
 {
     private TrayService? _trayService;
+    private HotkeyService? _hotkeyService;
     private ChatViewModel? _chatViewModel;
+    private ChatWindow? _mainWindow;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
         // 创建主窗口和 ViewModel
-        var mainWindow = new ChatWindow();
+        _mainWindow = new ChatWindow();
         _chatViewModel = new ChatViewModel();
 
         // 加载对话历史
@@ -31,13 +33,19 @@ public partial class App : System.Windows.Application
             _chatViewModel.ErrorMessage = loadError;
         }
 
-        mainWindow.DataContext = _chatViewModel;
+        _mainWindow.DataContext = _chatViewModel;
 
         // 初始化托盘服务
-        _trayService = new TrayService(mainWindow);
+        _trayService = new TrayService(_mainWindow);
 
-        // 显示主窗口
-        mainWindow.Show();
+        // 初始化热键服务
+        _hotkeyService = new HotkeyService();
+        _hotkeyService.ToggleWindowHotkeyPressed += OnToggleWindowHotkeyPressed;
+        _hotkeyService.NewConversationHotkeyPressed += OnNewConversationHotkeyPressed;
+
+        // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
+        _mainWindow.Show();
+        _mainWindow.SetHotkeyService(_hotkeyService);
     }
 
     protected override async void OnExit(ExitEventArgs e)
@@ -48,10 +56,44 @@ public partial class App : System.Windows.Application
             await _chatViewModel.SaveConversationsAsync();
         }
 
+        // 清理热键服务
+        _hotkeyService?.Dispose();
+
         // 清理托盘服务
         _trayService?.Dispose();
 
         base.OnExit(e);
     }
+
+    #region Hotkey Event Handlers
+
+    /// <summary>
+    /// 切换窗口显示/隐藏热键处理（Ctrl+Shift+H）。
+    /// </summary>
+    private void OnToggleWindowHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        if (_mainWindow == null)
+            return;
+
+        if (_mainWindow.IsVisible)
+        {
+            _mainWindow.Hide();
+        }
+        else
+        {
+            _mainWindow.Show();
+            _mainWindow.Activate();
+        }
+    }
+
+    /// <summary>
+    /// 新建对话热键处理（Ctrl+Shift+J）。
+    /// </summary>
+    private void OnNewConversationHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        _chatViewModel?.NewConversationCommand.Execute(null);
+    }
+
+    #endregion
 }
 
