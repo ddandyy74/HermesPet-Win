@@ -191,24 +191,32 @@
 
 **目标：** 桌面伴侣体验——动态岛状态栏 + 5 个像素宠物 + 窗口拖动 + 状态动画。
 
-### M2.1 动态岛悬浮窗（Day 1-4）
+### M2.1 动态岛悬浮窗（Day 1-4）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Views/DynamicIsland.xaml` — 动态岛 UI
-- [ ] `Windows/DynamicIslandWindow.cs` — 窗口逻辑（透明、置顶、无任务栏）
-- [ ] `ViewModels/IslandViewModel.cs` — 状态机（Idle, Hovering, Streaming, ToolProgress, VoiceActive, Permission, Error）
-- [ ] 动态岛定位到屏幕顶部中央
+- [x] `Models/IslandState.cs` — 7 种状态枚举（Idle, Hovering, Streaming, ToolProgress, VoiceActive, Permission, Error）
+- [x] `ViewModels/IslandViewModel.cs` — 状态机 + ObservableProperty + 状态切换方法
+- [x] `Windows/DynamicIsland.xaml` — 胶囊形 UI 布局
+- [x] `Windows/DynamicIslandWindow.cs` — 窗口逻辑（透明、置顶、无任务栏、定时器悬停检测）
+- [x] `Windows/StateToBackgroundConverter.cs` — 状态→背景色转换
+- [x] `Windows/StateToVisibilityConverter.cs` — 状态→可见性转换
+- [x] 动态岛定位到屏幕顶部中央（WorkArea 计算）
 
-**验收标准：**
-- 动态岛显示在屏幕最顶部中央
-- 窗口属性：`WindowStyle.None`, `AllowsTransparency=true`, `Topmost=true`, `ShowInTaskbar=false`
-- 基本状态切换有视觉效果
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 动态岛显示在屏幕最顶部中央
+- ✅ 窗口属性正确（WindowStyle.None, AllowsTransparency=true, Topmost=true, ShowInTaskbar=false）
+- ✅ 基本状态切换有视觉效果（7 种状态颜色映射）
 
-**关键约束：**
-- TDR-001：**禁止**使用 `WindowChrome`（会导致渲染问题）
-- TDR-001：**禁止**设置 `ResizeMode`
-- TDR-002：使用 `HitTest` / `IsHitTestVisible`，**不要**用 `MouseEnter`/`MouseLeave`
-- TDR-006：动画必须使用 `Dispatcher.InvokeAsync`
+**关键约束验证：**
+- ✅ TDR-001：未使用 WindowChrome
+- ✅ TDR-001：未设置 ResizeMode
+- ✅ TDR-002：使用 HitTest（DispatcherTimer + Mouse.GetPosition + Rect.Contains），**未使用** MouseEnter/MouseLeave
+- ✅ TDR-006：Dispatcher.InvokeAsync 用于窗口尺寸更新
+
+**QA 流程：**
+- 第一次 QA：发现 TDR-002 违规（使用 MouseEnter/MouseLeave）
+- 修复：改用 DispatcherTimer + HitTest 检测悬停（100ms 定时器）
+- 第二次 QA：✅ 通过
 
 **依赖：** M1
 

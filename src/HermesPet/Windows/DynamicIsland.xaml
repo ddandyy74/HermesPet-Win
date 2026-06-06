@@ -1,0 +1,132 @@
+<Window x:Class="HermesPet.Windows.DynamicIslandWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HermesPet.Windows"
+        xmlns:models="clr-namespace:HermesPet.Models"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Topmost="True"
+        ShowInTaskbar="False"
+        Background="Transparent"
+        Width="280"
+        Height="36">
+
+    <Window.Resources>
+        <!-- 胶囊形状模板 -->
+        <ControlTemplate x:Key="CapsuleTemplate" TargetType="ContentControl">
+            <Grid>
+                <!-- 胶囊背景 -->
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="18"
+                        BorderThickness="0">
+                    <ContentPresenter HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </ControlTemplate>
+
+        <!-- 状态背景色转换器 -->
+        <local:StateToBackgroundConverter x:Key="StateToBackgroundConverter"/>
+    </Window.Resources>
+
+    <!-- 主容器 -->
+    <Grid>
+        <!-- 胶囊形动态岛 -->
+        <ContentControl Template="{StaticResource CapsuleTemplate}"
+                       Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
+            <Grid Margin="16,0">
+                <!-- Idle/Hovering 状态：显示 AI 模式图标和名称 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter='Idle,Hovering'}">
+                    <!-- AI 模式图标（占位，后续用真实图标替换） -->
+                    <TextBlock Text="🤖" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <!-- AI 模式名称 -->
+                    <TextBlock Text="{Binding StateText}"
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Streaming 状态：显示思考动画 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=Streaming}">
+                    <!-- 脉冲动画（占位，后续实现 Storyboard） -->
+                    <TextBlock Text="💫" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="正在思考..."
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- ToolProgress 状态：显示工具进度 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=ToolProgress}">
+                    <TextBlock Text="🔧" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="{Binding StateText}"
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- VoiceActive 状态：显示语音波形 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=VoiceActive}">
+                    <TextBlock Text="🎤" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="正在聆听..."
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Permission 状态：显示权限请求 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=Permission}">
+                    <TextBlock Text="⚠️" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="{Binding StateText}"
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Error 状态：显示错误信息 -->
+                <StackPanel Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=Error}">
+                    <TextBlock Text="❌" FontSize="16" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="{Binding ErrorMessage}"
+                             FontSize="14"
+                             FontWeight="Medium"
+                             Foreground="White"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"
+                             TextTrimming="CharacterEllipsis"
+                             MaxWidth="200"/>
+                </StackPanel>
+            </Grid>
+        </ContentControl>
+    </Grid>
+</Window>

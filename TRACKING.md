@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：37%
+> 最后更新：2026-06-07 | 当前阶段：M2 动态岛+宠物 | 进度：46%
 
 ---
 
@@ -9,14 +9,14 @@
 | 里程碑 | 状态 | 进度 | 开始 | 完成 | 预估工期 | 实际工期 |
 |--------|------|------|------|------|---------|---------|
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
-| M2 动态岛+宠物 | ⬜ 未开始 | 0/15 | - | - | 2-3 周 | - |
+| M2 动态岛+宠物 | 🔄 进行中 | 6/15 | 2026-06-07 | - | 2-3 周 | - |
 | M3 多会话+多AI | ⬜ 未开始 | 0/10 | - | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 24/65 任务
-███████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 37%
+总进度: 30/65 任务
+██████████████████████████████████████████░░░░░░░░░░░░░░░░░ 46%
 ```
 
 ---
@@ -96,16 +96,18 @@
 
 ## M2 动态岛+宠物 — 详细跟踪
 
-**目标：** 桌面伴侣体验 | **预估：** 2-3 周 | **开始：** -
+**目标：** 桌面伴侣体验 | **预估：** 2-3 周 | **开始：** 2026-06-07
 
 ### M2.1 动态岛悬浮窗
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M2.1.1 | `Views/DynamicIsland.xaml` UI | DynamicIslandController.swift | ⬜ | 胶囊形布局 |
-| M2.1.2 | `Windows/DynamicIslandWindow.cs` | DynamicIslandController.swift | ⬜ | 无边框/透明/置顶/无任务栏 |
-| M2.1.3 | `ViewModels/IslandViewModel.cs` | DynamicIslandController.swift | ⬜ | 7 状态机 + ObservableProperty |
-| M2.1.4 | 屏幕顶部中央定位 | DynamicIslandController.swift | ⬜ | WorkArea 计算 |
+| M2.1.1 | `Models/IslandState.cs` | DynamicIslandController.swift | ✅ | 7 种状态枚举 |
+| M2.1.2 | `ViewModels/IslandViewModel.cs` | DynamicIslandController.swift | ✅ | 状态机 + ObservableProperty |
+| M2.1.3 | `Windows/DynamicIsland.xaml` | DynamicIslandController.swift | ✅ | 胶囊形布局 + 背景色绑定 |
+| M2.1.4 | `Windows/DynamicIslandWindow.cs` | DynamicIslandController.swift | ✅ | 无边框/透明/置顶/无任务栏/定时器悬停 |
+| M2.1.5 | `Windows/StateToBackgroundConverter.cs` | - | ✅ | 状态→背景色转换 |
+| M2.1.6 | `Windows/StateToVisibilityConverter.cs` | - | ✅ | 状态→可见性转换 |
 
 ### M2.2 动态岛动画
 
@@ -293,8 +295,8 @@
 
 | 快捷键 | 功能 | M# | 状态 | 备注 |
 |--------|------|-----|------|------|
-| Ctrl+Shift+H | 显示/隐藏主窗口 | M1.6 | ⬜ | |
-| Ctrl+Shift+J | 新建对话 | M1.6 | ⬜ | |
+| Ctrl+Shift+H | 显示/隐藏主窗口 | M1.6 | ✅ | RegisterHotKey API |
+| Ctrl+Shift+J | 新建对话 | M1.6 | ✅ | |
 | Ctrl+Shift+V | 语音输入（按住说话） | M4.1 | ⬜ | |
 | Ctrl+Shift+Space | 快速询问 | M4.3 | ⬜ | |
 | Ctrl+Shift+G | 知识云图 | M4.3 | ⬜ | |
@@ -307,7 +309,7 @@
 | AI 模式 | 客户端类 | M# | 基础连接 | 流式响应 | 图片支持 | 状态 |
 |---------|---------|-----|---------|---------|---------|------|
 | Hermes | HermesClient | M1.3 | ⬜ | ⬜ | ⬜ | ⬜ |
-| Online AI | OnlineAIClient | M3.2 | ⬜ | ⬜ | ⬜ | ⬜ |
+| Online AI | OpenAICompatibleClient (DeepSeek) | M1.3 | ✅ | ✅ | ✅ | ✅ |
 | OpenClaw | OpenClawClient | M3.2 | ⬜ | ⬜ | ⬜ | ⬜ |
 | Claude Code | ClaudeCodeClient | M3.2 | ⬜ | ⬜ | ⬜ | ⬜ |
 | Codex | CodexClient | M3.2 | ⬜ | ⬜ | ⬜ | ⬜ |
@@ -318,24 +320,24 @@
 
 | TDR | 主题 | 状态 | 验证点 |
 |-----|------|------|--------|
-| TDR-001 | 动态岛 = 独立 Window（无 WindowChrome） | ⬜ 待实现 | M2.1 |
-| TDR-002 | 悬停使用 HitTest（不用 MouseEnter） | ⬜ 待实现 | M2.1/M2.3 |
+| TDR-001 | 动态岛 = 独立 Window（无 WindowChrome） | ✅ 已验证 | M2.1 |
+| TDR-002 | 悬停使用 HitTest（不用 MouseEnter） | ✅ 已验证 | M2.1 |
 | TDR-003 | 截图优先 Windows.Graphics.Capture | ⬜ 待实现 | M4.2 |
 | TDR-004 | 开发者签名 | ⬜ 待实现 | M5.3 |
-| TDR-005 | 后台回调 async/await + ConfigureAwait(false) | ⬜ 待实现 | M1.3 |
-| TDR-006 | 跨窗口动画用 Dispatcher.InvokeAsync | ⬜ 待实现 | M2.2 |
-| TDR-007 | 输入框设计符合 Windows 规范 | ⬜ 待实现 | M1.4 |
-| TDR-008 | 图片传递支持多模式 | ⬜ 待实现 | M4.2 |
-| TDR-009 | 文档传递用文件路径 | ⬜ 待实现 | M1.2 |
-| TDR-010 | 图片持久化双重写入 | ⬜ 待实现 | M1.5 |
-| TDR-011 | ObservableProperty 必须有 XAML 绑定 | ⬜ 待实现 | M1.4 |
+| TDR-005 | 后台回调 async/await + ConfigureAwait(false) | ✅ 已验证 | M1.3 |
+| TDR-006 | 跨窗口动画用 Dispatcher.InvokeAsync | ✅ 已验证 | M2.1 |
+| TDR-007 | 输入框设计符合 Windows 规范 | ✅ 已验证 | M1.4 |
+| TDR-008 | 图片传递支持多模式 | ✅ 已验证 | M1.3 |
+| TDR-009 | 文档传递用文件路径 | ✅ 已验证 | M1.2 |
+| TDR-010 | 图片持久化双重写入 | ✅ 已验证 | M1.2 |
+| TDR-011 | ObservableProperty 必须有 XAML 绑定 | ✅ 已验证 | M1.4 |
 | TDR-012 | 代码签名修复 | ⬜ 待实现 | M5.3 |
-| TDR-013 | 工具进度状态机 | ⬜ 待实现 | M2.1 |
-| TDR-014 | Online AI 独立模式 | ⬜ 待实现 | M1.2 |
+| TDR-013 | 工具进度状态机 | ✅ 已验证 | M2.1 |
+| TDR-014 | Online AI 独立模式 | ✅ 已验证 | M1.2 |
 | TDR-015 | 内置 opencode 服务 | ⬜ 待实现 | M3.2 |
 | TDR-016 | 权限 UI 独立窗口 | ⬜ 待实现 | M5.1 |
 | TDR-017 | ChoiceCard 填充输入而非直接发送 | ⬜ 待实现 | M1.4 |
-| TDR-018 | 添加新模式 grep 所有 switch | ⬜ 待实现 | M3.4 |
+| TDR-018 | 添加新模式 grep 所有 switch | ✅ 已验证 | M1.2 |
 
 ---
 
@@ -349,13 +351,16 @@
 | `Models/Conversation.cs` | Models.swift | ✅ | M1.2 |
 | `Models/AgentMode.cs` | Models.swift | ✅ | M1.2 |
 | `Models/APIModels.cs` | Models.swift | ✅ | M1.2 |
-| `ViewModels/ChatViewModel.cs` | ChatViewModel.swift | ⬜ | M1.4 |
-| `Services/AIClient.cs` | APIClient.swift | ⬜ | M1.3 |
-| `Services/OpenAICompatibleClient.cs` | APIClient.swift | ⬜ | M1.3 |
-| `Services/StorageService.cs` | StorageManager.swift | ⬜ | M1.5 |
-| `Services/HotkeyService.cs` | GlobalHotkey.swift | ⬜ | M1.6 |
-| `Views/ChatWindow.xaml` | ChatView.swift | ⬜ | M1.4 |
-| `Views/DynamicIsland.xaml` | DynamicIslandController.swift | ⬜ | M2.1 |
+| `Models/IslandState.cs` | DynamicIslandController.swift | ✅ | M2.1 |
+| `ViewModels/ChatViewModel.cs` | ChatViewModel.swift | ✅ | M1.4 |
+| `ViewModels/IslandViewModel.cs` | DynamicIslandController.swift | ✅ | M2.1 |
+| `Services/AIClient.cs` | APIClient.swift | ✅ | M1.3 |
+| `Services/OpenAICompatibleClient.cs` | APIClient.swift | ✅ | M1.3 |
+| `Services/StorageService.cs` | StorageManager.swift | ✅ | M1.5 |
+| `Services/HotkeyService.cs` | GlobalHotkey.swift | ✅ | M1.6 |
+| `Views/ChatWindow.xaml` | ChatView.swift | ✅ | M1.4 |
+| `Windows/DynamicIsland.xaml` | DynamicIslandController.swift | ✅ | M2.1 |
+| `Windows/DynamicIslandWindow.cs` | DynamicIslandController.swift | ✅ | M2.1 |
 | `Views/PetWindow.xaml` | PetView.swift | ⬜ | M2.3 |
 | `Resources/Presets.json` | presets.json | ⬜ | M3.4 |
 
@@ -399,6 +404,11 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M2.1 | 动态岛悬浮窗完成（6/6 任务）+ TDR-002 修复（改用 HitTest 检测悬停） | 第一次 QA 发现 TDR-002 违规 | 开始 M2.2 动态岛动画 |
+| 2026-06-07 | M1 最终验收 | AIClient 注入修复 + DeepSeek 默认配置 | QA 发现 AIClient 未注入 | M1 全部完成 |
+| 2026-06-07 | M1.6 | 全局热键完成（4/4 任务） | 无 | 开始 M1 最终验收 |
+| 2026-06-07 | M1.5 | 存储服务 + 系统托盘完成（4/4 任务） | 无 | 开始 M1.6 全局热键 |
+| 2026-06-07 | M1.4 | ChatViewModel + UI 完成（5/5 任务）+ 命令修复 | QA 发现缺少 SwitchToConversationCommand | 开始 M1.5 存储服务 |
 | 2026-06-07 | M1.3 | AI 客户端基类完成（5/5 任务）+ TDR 修复（SupportsImages/Documents 属性） | 无 | 开始 M1.4 ChatViewModel + UI |
 | 2026-06-07 | M1.2 | 数据模型完成 + TDR 修复（TDR-018 TODO 注释, TDR-010 Images 双重引用） | 无 | 开始 M1.3 AI 客户端 |
 | 2026-06-07 | M1.1 | 项目骨架完成（6/6 任务） | 无 | 开始 M1.2 数据模型 |
