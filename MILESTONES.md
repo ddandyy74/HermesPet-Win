@@ -501,9 +501,70 @@
 
 ## M4：高级功能（2-3 周）
 
-**目标：** 完整功能集——语音输入、截图、快速询问、置顶卡片、知识云图、任务卡片、每日简报。
+**目标：** 完整功能集——宠物动画移植、语音输入、截图、快速询问、置顶卡片、知识云图、任务卡片、每日简报。
 
-### M4.1 语音输入（Day 1-4）
+### M4.0 宠物动画移植（Day 1-6）🔄 进行中
+
+**背景：** macOS 版本的 5 种宠物使用 SwiftUI Canvas 纯代码绘制，需要移植到 WPF DrawingContext/WriteableBitmap。
+
+**移植方案：** 代码绘制移植（方案A）
+- ✅ 保持 macOS 版本的灵活性（动态调色、实时动画参数调整）
+- ✅ 文件体积小（无图片资源）
+- ✅ 可实现像素级的完美还原
+
+**交付物：**
+- [x] `Sprites/PixelRect.cs` — 像素矩形结构（对应 Swift ClawdRect/FomoRect）
+- [x] `Sprites/PetPalette.cs` — 宠物调色板（移植自 PetPalette.swift）
+- [ ] `Sprites/ClawdSprite.cs` — Clawd 宠物绘制逻辑（橘色龙虾状像素生物）
+- [ ] `Sprites/FomoSprite.cs` — Fomo 宠物绘制逻辑（白色九尾狐）
+- [ ] `Sprites/CloudSprite.cs` — Cloud 宠物绘制逻辑（云朵小精灵）
+- [ ] `Sprites/HermesHorseSprite.cs` — Hermes Horse 宠物绘制逻辑（绿色羽毛）
+- [ ] `Sprites/CodexTerminalSprite.cs` — Codex Terminal 宠物绘制逻辑（青色 `</>` + 闪烁光标）
+- [ ] 动画驱动系统（DispatcherTimer 替代 TimelineView）
+- [ ] 帧率档位管理（空闲时降帧省电，30fps → 12fps）
+
+**技术实现要点：**
+1. **坐标系统移植**：将 macOS viewBox（如 15×10）坐标系统移植到 C#
+2. **绘制方式**：使用 WPF DrawingContext 或 WriteableBitmap
+3. **动画驱动**：
+   - macOS: TimelineView(.animation) + Canvas
+   - Windows: DispatcherTimer + DrawingContext
+4. **动画参数完全照搬**：
+   - Clawd: 呼吸 3.2s、眨眼 4.5s（闭眼 0.18s）
+   - Fomo: 呼吸 3.2s、眨眼 4.5s、耳朵抖动 1.6Hz + 4s 大幅 twitch
+5. **动态调色支持**：PetPalette 实时切换（用户可在设置中更改配色）
+
+**验收标准：**
+- 5 种宠物均可正确绘制（像素级对比 macOS 版本）
+- 动画流畅度 ≥ 30fps（工作时），空闲时可降至 12fps 省电
+- 支持动态调色（实时切换配色方案）
+- 内存占用 < 5MB（单个宠物实例）
+
+**关键约束：**
+- TDR-006：动画使用 Dispatcher.InvokeAsync 触发重绘
+- 性能 P0：避免不必要的重绘（状态检查 + 脏区域标记）
+- 性能 P0：空闲时降帧省电（spriteFrameInterval 环境值）
+
+**工作量评估：**
+| 宠物 | Swift 代码行数 | C# 移植工作量 | 优先级 |
+|------|--------------|-------------|-------|
+| Clawd | ~300 行 | 1-2 天 | P0（Claude 模式核心） |
+| Fomo | ~270 行 | 1-2 天 | P1（OpenClaw 模式） |
+| Cloud | ~150 行 | 0.5 天 | P2（在线 AI 模式） |
+| Hermes | ~150 行 | 0.5 天 | P2 |
+| Codex | ~100 行 | 0.5 天 | P2 |
+
+**依赖：** M2.3（宠物窗口已创建）
+
+**参考 macOS：**
+- `ModeSprite.swift`（2049 行，包含所有宠物绘制逻辑）
+- `FomoSprite.swift`（268 行，Fomo 专属逻辑）
+- `PetPalette.swift`（调色板系统）
+- `AnimationTokens.swift`（动画参数定义）
+
+---
+
+### M4.1 语音输入（Day 7-10）
 
 **交付物：**
 - [ ] `Services/VoiceService.cs` — NAudio 录音 + 语音识别
@@ -520,13 +581,13 @@
 - 优先使用 Azure Speech SDK，备选 Whisper.NET
 - NAudio 录音格式：16kHz、16bit、Mono
 
-**依赖：** M1, M2
+**依赖：** M1, M2, M4.0
 
 **参考 macOS：** `VoiceInputController.swift`、`VoiceTranscriptOverlay.swift`
 
 ---
 
-### M4.2 截图功能（Day 5-7）
+### M4.2 截图功能（Day 11-13）
 
 **交付物：**
 - [ ] `Services/ScreenCaptureService.cs` — 屏幕截图
@@ -543,13 +604,13 @@
 - TDR-003：优先 `Windows.Graphics.Capture`，备选 `BitBlt`
 - TDR-008：根据 `SupportsImages` 决定图片传递方式
 
-**依赖：** M1
+**依赖：** M1, M4.0
 
 **参考 macOS：** `ScreenCapture.swift`
 
 ---
 
-### M4.3 快速询问+置顶卡片+知识云图（Day 8-12）
+### M4.3 快速询问+置顶卡片+知识云图（Day 14-18）
 
 **交付物：**
 - [ ] `Views/QuickAskWindow.xaml` — Spotlight 风格浮动窗口
@@ -564,13 +625,13 @@
 - 置顶卡片可拖动，内容固定在桌面
 - 知识云图显示对话关键词关系
 
-**依赖：** M1, M3
+**依赖：** M1, M3, M4.0
 
 **参考 macOS：** `QuickAskWindow.swift`、`PinCardOverlay.swift`、`CanvasView.swift`
 
 ---
 
-### M4.4 任务卡片+每日简报（Day 13-17）
+### M4.4 任务卡片+每日简报（Day 19-23）
 
 **交付物：**
 - [ ] `Helpers/YAMLParser.cs` — AI 输出 YAML 任务卡片解析
@@ -583,7 +644,7 @@
 - 任务卡片可勾选完成/未完成
 - 每日简报可按时生成
 
-**依赖：** M3
+**依赖：** M3, M4.0
 
 **参考 macOS：** `MorningBriefingService.swift`、`ChatComponents.swift`（任务卡片部分）
 
@@ -591,12 +652,20 @@
 
 ### M4 最终验收
 
+- [ ] 5 种宠物动画全部移植完成，像素级还原 macOS 版本
+- [ ] 宠物动画流畅度 ≥ 30fps，空闲时可降至 12fps
+- [ ] 支持动态调色（实时切换配色方案）
 - [ ] 语音输入按住说话功能正常
 - [ ] 截图可捕获并发送给 AI
 - [ ] 所有快捷键功能正常（6 个快捷键）
 - [ ] 快速询问、置顶卡片、知识云图均可打开和关闭
 - [ ] 任务卡片正确解析和显示
 - [ ] 功能组合测试：语音+截图+快捷键+多会话无崩溃
+
+**工期调整说明：**
+- M4.0（宠物动画移植）新增 6 天工期
+- M4.1-M4.4 工期顺延（Day 1-6 → Day 7-23）
+- M4 总工期从 17 天调整为 23 天（约 3 周）
 
 ---
 

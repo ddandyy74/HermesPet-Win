@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M3 多会话+多AI | 进度：76%
+> 最后更新：2026-06-07 | 当前阶段：M4.0 宠物动画移植 | 进度：76%
 
 ---
 
@@ -11,9 +11,12 @@
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ✅ 已完成 | 21/21 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M3 多会话+多AI | ✅ 已完成 | 10/10 | 2026-06-07 | 2026-06-07 | 1-2 周 | 1 天 |
-| M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
+| M4 高级功能 | 🔄 进行中 | 2/20 | 2026-06-07 | - | 3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
+```
+总进度: 59/83 任务
+██████████████████████████████████████████████████████████████████░░░ 71%
 ```
 总进度: 57/75 任务
 ████████████████████████████████████████████████████████████████░░░░ 76%
@@ -207,7 +210,51 @@
 
 ## M4 高级功能 — 详细跟踪
 
-**目标：** 完整功能集 | **预估：** 2-3 周 | **开始：** -
+**目标：** 完整功能集 | **预估：** 3 周 | **开始：** 2026-06-07
+
+### M4.0 宠物动画移植 🔄 进行中
+
+**背景：** macOS 版本的 5 种宠物使用 SwiftUI Canvas 纯代码绘制，需要移植到 WPF。
+
+**移植方案：** 代码绘制移植（方案A）— 保持灵活性、体积小、像素级还原
+
+| ID | 任务 | 参考 macOS | 状态 | 备注 |
+|----|------|-----------|------|------|
+| M4.0.1 | `Sprites/PixelRect.cs` 像素矩形结构 | ClawdRect/FomoRect | ✅ | 对应 Swift 结构体 |
+| M4.0.2 | `Sprites/PetPalette.cs` 调色板系统 | PetPalette.swift | ✅ | 动态调色支持 |
+| M4.0.3 | 动画驱动基础设施（DispatcherTimer） | TimelineView | ⬜ | 30fps 默认，空闲降至 12fps |
+| M4.0.4 | `Sprites/ClawdSprite.cs` Clawd 绘制 | ModeSprite.swift (Clawd 部分) | ⬜ | P0 优先级，橘色龙虾状像素生物 |
+| M4.0.5 | Clawd 动画实现（呼吸 3.2s + 眨眼 4.5s） | ModeSprite.swift | ⬜ | 呼吸：±2% Y 轴缩放，眨眼：0.18s 闭眼 |
+| M4.0.6 | `Sprites/FomoSprite.cs` Fomo 绘制 | FomoSprite.swift | ⬜ | P1 优先级，白色九尾狐 |
+| M4.0.7 | Fomo 动画实现（耳朵抖动 1.6Hz + 4s twitch） | FomoSprite.swift | ⬜ | 耳朵灵动是最大特征 |
+| M4.0.8 | `Sprites/CloudSprite.cs` Cloud 绘制 | ModeSprite.swift (Cloud 部分) | ⬜ | P2，云朵小精灵 |
+| M4.0.9 | `Sprites/HermesHorseSprite.cs` Hermes 绘制 | ModeSprite.swift (Hermes 部分) | ⬜ | P2，绿色羽毛 |
+| M4.0.10 | `Sprites/CodexTerminalSprite.cs` Codex 绘制 | ModeSprite.swift (Codex 部分) | ⬜ | P2，青色 `</>` + 闪烁光标 |
+| M4.0.11 | 集成到 PixelPetControl | - | ⬜ | 替换现有的占位符动画 |
+| M4.0.12 | 动态调色测试 | PetPalette.swift | ⬜ | 实时切换配色方案 |
+
+**技术要点：**
+- **坐标系统**：viewBox 15×10（Clawd）或 14×10（Fomo），单位像素坐标
+- **绘制方式**：WPF DrawingContext 或 WriteableBitmap
+- **动画参数**：完全照搬 macOS 版本（呼吸/眨眼/走路/耳朵抖动频率）
+- **性能优化**：空闲时降帧省电（spriteFrameInterval 环境值）
+
+**参考 macOS 文件：**
+- `reference-mac/Sources/ModeSprite.swift`（2049 行，包含所有宠物）
+- `reference-mac/Sources/FomoSprite.swift`（268 行，Fomo 专属）
+- `reference-mac/Sources/PetPalette.swift`（调色板系统）
+- `reference-mac/Sources/AnimationTokens.swift`（动画参数）
+
+**工作量评估：**
+| 宠物 | Swift 代码 | C# 移植 | 优先级 | 预计 |
+|------|----------|--------|-------|-----|
+| Clawd | ~300 行 | 1-2 天 | P0 | Day 1-2 |
+| Fomo | ~270 行 | 1-2 天 | P1 | Day 3-4 |
+| Cloud | ~150 行 | 0.5 天 | P2 | Day 5 |
+| Hermes | ~150 行 | 0.5 天 | P2 | Day 5 |
+| Codex | ~100 行 | 0.5 天 | P2 | Day 6 |
+
+---
 
 ### M4.1 语音输入
 
@@ -218,6 +265,10 @@
 | M4.1.3 | 音量可视化 | VoiceTranscriptOverlay.swift | ⬜ | |
 | M4.1.4 | 语音识别集成 | VoiceInputController.swift | ⬜ | Azure Speech SDK / Whisper.NET |
 
+**依赖：** M1, M2, M4.0
+
+---
+
 ### M4.2 截图功能
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
@@ -226,6 +277,10 @@
 | M4.2.2 | Windows.Graphics.Capture 主方案 | - | ⬜ | Win10 1903+ |
 | M4.2.3 | BitBlt 备选方案 | - | ⬜ | 旧系统兼容 |
 | M4.2.4 | 截图→消息附加 | - | ⬜ | Base64 编码或文件路径 |
+
+**依赖：** M1, M4.0
+
+---
 
 ### M4.3 快速询问+置顶+云图
 
@@ -236,6 +291,10 @@
 | M4.3.3 | `Views/PinCardWindow.xaml` | PinCardOverlay.swift | ⬜ | Ctrl+Shift+P |
 | M4.3.4 | `Views/KnowledgeMapWindow.xaml` | CanvasView.swift | ⬜ | Ctrl+Shift+G |
 
+**依赖：** M1, M3, M4.0
+
+---
+
 ### M4.4 任务卡片+每日简报
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
@@ -245,8 +304,15 @@
 | M4.4.3 | `Services/MorningBriefingService.cs` | MorningBriefingService.swift | ⬜ | 每日简报生成 |
 | M4.4.4 | 简报 UI 显示 | - | ⬜ | |
 
+**依赖：** M3, M4.0
+
+---
+
 ### M4 验收检查清单
 
+- [ ] 5 种宠物动画全部移植完成，像素级还原 macOS 版本
+- [ ] 宠物动画流畅度 ≥ 30fps，空闲时可降至 12fps
+- [ ] 支持动态调色（实时切换配色方案）
 - [ ] 语音输入按住说话正常
 - [ ] 截图可捕获并发送给 AI
 - [ ] 6 个快捷键全部正常
@@ -399,13 +465,19 @@
 
 ## 宠物角色资产跟踪
 
-| 角色 | 图标 | AI 模式 | 精灵图 | 台词集 | 动画帧 | 状态 |
-|------|------|---------|--------|--------|--------|------|
-| Clawd | 🦀 | Claude Code | ⬜ | ⬜ | ⬜ | ⬜ |
-| Cloud | ☁️ | Online AI | ⬜ | ⬜ | ⬜ | ⬜ |
-| fomo | 🦊 | OpenClaw | ⬜ | ⬜ | ⬜ | ⬜ |
-| Pegasus | 🐴 | Hermes | ⬜ | ⬜ | ⬜ | ⬜ |
-| coco | ⌨️ | Codex | ⬜ | ⬜ | ⬜ | ⬜ |
+| 角色 | 图标 | AI 模式 | 精灵图 | 台词集 | 动画帧 | 动画移植 | 状态 |
+|------|------|---------|--------|--------|--------|---------|------|
+| Clawd | 🦀 | Claude Code | ✅ | ✅ | ⬜ | ⬜ | M4.0 P0 |
+| fomo | 🦊 | OpenClaw | ✅ | ✅ | ⬜ | ⬜ | M4.0 P1 |
+| Cloud | ☁️ | Online AI | ✅ | ✅ | ⬜ | ⬜ | M4.0 P2 |
+| Pegasus | 🐴 | Hermes | ✅ | ✅ | ⬜ | ⬜ | M4.0 P2 |
+| coco | ⌨️ | Codex | ✅ | ✅ | ⬜ | ⬜ | M4.0 P2 |
+
+**动画移植方案：**
+- **技术栈**：WPF DrawingContext / WriteableBitmap
+- **动画驱动**：DispatcherTimer（30fps 默认，空闲 12fps）
+- **动态调色**：✅ 支持（PetPalette 实时切换）
+- **移植进度**：PixelRect.cs + PetPalette.cs 已完成（基础设施）
 
 ---
 
@@ -413,6 +485,7 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M4.0 开始 | 宠物动画移植方案确定（方案A：代码绘制移植），PixelRect.cs + PetPalette.cs 完成（2/12 任务） | 无 | 开始 Clawd 宠物绘制 |
 | 2026-06-07 | M2 最终验收 | M2 动态岛+宠物里程碑验收通过（21/21 任务完成） | 无阻塞问题 | 开始 M3 多会话+多AI |
 | 2026-06-07 | M2.4 | 宠物台词系统+联动完成（6/6 任务）+ 台词数据集（100+ 条） | 无 | M2 最终验收 |
 | 2026-06-07 | M2.3 | 宠物窗口+像素图动画完成（5/5 任务）+ PetWindow 集成修复 | 第一次 QA 发现 PetWindow 未集成到应用程序 | 开始 M2.4 宠物台词系统 |
