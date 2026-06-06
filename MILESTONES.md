@@ -39,16 +39,16 @@
 
 ---
 
-### M1.2 数据模型（Day 3-4）
+### M1.2 数据模型（Day 3-4）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Models/ChatMessage.cs` — 消息模型（Role, Content, ImagePaths, DocumentPaths, IsStreaming）
-- [ ] `Models/Conversation.cs` — 会话模型（Id, Title, Messages, Mode, HasUnread, IsStreaming）
-- [ ] `Models/AgentMode.cs` — AI 模式枚举（Hermes, OnlineAI, OpenClaw, ClaudeCode, Codex）
-- [ ] `Models/APIModels.cs` — API 请求/响应模型（OpenAIChunk, StreamChunk, ConnectionStatus 等）
-- [ ] `Models/CanvasBoard.cs` — 画布/任务卡片模型
+- [x] `Models/ChatMessage.cs` — 消息模型（Role, Content, ImagePaths, DocumentPaths, IsStreaming）
+- [x] `Models/Conversation.cs` — 会话模型（Id, Title, Messages, Mode, HasUnread, IsStreaming）
+- [x] `Models/AgentMode.cs` — AI 模式枚举（Hermes, OnlineAI, OpenClaw, ClaudeCode, Codex）
+- [x] `Models/APIModels.cs` — API 请求/响应模型（OpenAIChunk, StreamChunk, ConnectionStatus 等）
+- [x] `Models/CanvasBoard.cs` — 画布/任务卡片模型
 
-**验收标准：** 所有模型类编译通过，`AgentMode` 枚举包含 5 个成员。
+**验收标准：** ✅ 所有模型类编译通过，`AgentMode` 枚举包含 5 个成员。
 
 **关键约束：**
 - TDR-014：`OnlineAI` 是独立模式

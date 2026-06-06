@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：9%
+> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：17%
 
 ---
 
@@ -8,15 +8,15 @@
 
 | 里程碑 | 状态 | 进度 | 开始 | 完成 | 预估工期 | 实际工期 |
 |--------|------|------|------|------|---------|---------|
-| M1 核心框架 | 🔄 进行中 | 6/20 | 2026-06-07 | - | 2-3 周 | - |
+| M1 核心框架 | 🔄 进行中 | 11/20 | 2026-06-07 | - | 2-3 周 | - |
 | M2 动态岛+宠物 | ⬜ 未开始 | 0/15 | - | - | 2-3 周 | - |
 | M3 多会话+多AI | ⬜ 未开始 | 0/10 | - | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 6/65 任务
-███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 9%
+总进度: 11/65 任务
+█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 17%
 ```
 
 ---
@@ -40,11 +40,11 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M1.2.1 | `Models/ChatMessage.cs` | Models.swift | ⬜ | Role/Content/ImagePaths/DocumentPaths/IsStreaming/Timestamp |
-| M1.2.2 | `Models/Conversation.cs` | Models.swift | ⬜ | Id/Title/Messages/Mode/HasUnread/IsStreaming |
-| M1.2.3 | `Models/AgentMode.cs` | Models.swift | ⬜ | 5 种 AI 模式枚举 |
-| M1.2.4 | `Models/APIModels.cs` | Models.swift | ⬜ | OpenAIChunk/StreamChunk/ConnectionStatus/SSEEvent |
-| M1.2.5 | `Models/CanvasBoard.cs` | Models.swift | ⬜ | 画布/任务卡片模型 |
+| M1.2.1 | `Models/ChatMessage.cs` | Models.swift | ✅ | Role/Content/ImagePaths/DocumentPaths/IsStreaming/Timestamp |
+| M1.2.2 | `Models/Conversation.cs` | Models.swift | ✅ | Id/Title/Messages/Mode/HasUnread/IsStreaming |
+| M1.2.3 | `Models/AgentMode.cs` | Models.swift | ✅ | 5 种 AI 模式枚举 |
+| M1.2.4 | `Models/APIModels.cs` | Models.swift | ✅ | OpenAIChunk/StreamChunk/ConnectionStatus/SSEEvent |
+| M1.2.5 | `Models/CanvasBoard.cs` | Models.swift | ✅ | 画布/任务卡片模型 |
 
 ### M1.3 AI 客户端
 
@@ -344,10 +344,10 @@
 
 | 文件 | 参考 macOS | 状态 | M# |
 |------|-----------|------|-----|
-| `Models/ChatMessage.cs` | Models.swift | ⬜ | M1.2 |
-| `Models/Conversation.cs` | Models.swift | ⬜ | M1.2 |
-| `Models/AgentMode.cs` | Models.swift | ⬜ | M1.2 |
-| `Models/APIModels.cs` | Models.swift | ⬜ | M1.2 |
+| `Models/ChatMessage.cs` | Models.swift | ✅ | M1.2 |
+| `Models/Conversation.cs` | Models.swift | ✅ | M1.2 |
+| `Models/AgentMode.cs` | Models.swift | ✅ | M1.2 |
+| `Models/APIModels.cs` | Models.swift | ✅ | M1.2 |
 | `ViewModels/ChatViewModel.cs` | ChatViewModel.swift | ⬜ | M1.4 |
 | `Services/AIClient.cs` | APIClient.swift | ⬜ | M1.3 |
 | `Services/OpenAICompatibleClient.cs` | APIClient.swift | ⬜ | M1.3 |
@@ -398,6 +398,7 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M1.2 | 数据模型完成（5/5 任务） | 无 | 开始 M1.3 AI 客户端 |
 | 2026-06-07 | M1.1 | 项目骨架完成（6/6 任务） | 无 | 开始 M1.2 数据模型 |
 | 2026-06-07 | - | MILESTONES.md + TRACKING.md 创建 | 无 | 开始 M1.1 项目骨架 |
 
