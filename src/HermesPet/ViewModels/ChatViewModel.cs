@@ -67,6 +67,17 @@ public partial class ChatViewModel : ObservableObject
     private string _activeConversationID = string.Empty;
 
     /// <summary>
+    /// 当 ActiveConversationID 变化时触发相关属性更新
+    /// </summary>
+    partial void OnActiveConversationIDChanged(string value)
+    {
+        OnPropertyChanged(nameof(ActiveConversation));
+        OnPropertyChanged(nameof(Messages));
+        OnPropertyChanged(nameof(AgentMode));
+        OnPropertyChanged(nameof(IsLoading));
+    }
+
+    /// <summary>
     /// 输入框文本
     /// </summary>
     [ObservableProperty]
@@ -79,10 +90,26 @@ public partial class ChatViewModel : ObservableObject
     private string? _errorMessage;
 
     /// <summary>
-    /// 连接状态
+    /// 连接状态（M3.3 实现）
     /// </summary>
-    [ObservableProperty]
     private ConnectionStatus _connectionStatus = ConnectionStatus.Error;
+
+    /// <summary>
+    /// 获取或设置连接状态
+    /// 注：M3.3 阶段将实现连接状态检测和 UI 显示
+    /// </summary>
+    public ConnectionStatus ConnectionStatus
+    {
+        get => _connectionStatus;
+        set
+        {
+            if (_connectionStatus != value)
+            {
+                _connectionStatus = value;
+                OnPropertyChanged(nameof(ConnectionStatus));
+            }
+        }
+    }
 
     /// <summary>
     /// 上次使用的 AI 模式（持久化到设置，新建对话时继承）
@@ -117,6 +144,14 @@ public partial class ChatViewModel : ObservableObject
             }
             return activeConv.Messages;
         }
+    }
+
+    /// <summary>
+    /// 当前激活的对话（computed property，用于 UI 绑定）
+    /// </summary>
+    public Conversation? ActiveConversation
+    {
+        get => Conversations.FirstOrDefault(c => c.Id == ActiveConversationID);
     }
 
     /// <summary>
@@ -336,6 +371,44 @@ public partial class ChatViewModel : ObservableObject
     }
 
     /// <summary>
+    /// 删除指定对话（M3.1 多会话管理）
+    /// </summary>
+    /// <param name="id">对话 ID</param>
+    /// <returns>true 表示删除成功，false 表示删除失败</returns>
+    public bool DeleteConversation(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return false;
+
+        var idx = Conversations.ToList().FindIndex(c => c.Id == id);
+        if (idx < 0) return false;
+
+        // 至少保留一个对话
+        if (Conversations.Count <= 1)
+        {
+            ErrorMessage = "至少保留一个对话。";
+            return false;
+        }
+
+        // 取消正在进行的流式请求
+        if (_cancellationTokenSources.TryGetValue(id, out var cts))
+        {
+            cts.Cancel();
+            _cancellationTokenSources.Remove(id);
+        }
+
+        Conversations.RemoveAt(idx);
+
+        // 如果删除的是当前激活的对话，切换到其他对话
+        if (id == ActiveConversationID)
+        {
+            var newActiveIdx = Math.Min(idx, Conversations.Count - 1);
+            SwitchConversation(Conversations[newActiveIdx].Id);
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// 切换到指定对话命令
     /// </summary>
     [RelayCommand]
@@ -366,9 +439,7 @@ public partial class ChatViewModel : ObservableObject
         ActiveConversationID = id;
         LastUsedMode = conv?.Mode ?? LastUsedMode;
 
-        OnPropertyChanged(nameof(Messages));
-        OnPropertyChanged(nameof(AgentMode));
-        OnPropertyChanged(nameof(IsLoading));
+        // OnActiveConversationIDChanged 会自动触发相关属性更新
 
         return true;
     }

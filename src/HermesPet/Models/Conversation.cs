@@ -82,6 +82,26 @@ public class Conversation
     [JsonIgnore]
     public bool HasUserMessages => Messages.Any(m => m.Role == MessageRole.User);
 
+    /// <summary>
+    /// AI 模式图标（computed property，用于 UI 显示）
+    /// </summary>
+    [JsonIgnore]
+    public string ModeIcon => Mode switch
+    {
+        AgentMode.Hermes => "⚡",
+        AgentMode.OnlineAI => "🌐",
+        AgentMode.OpenClaw => "🦀",
+        AgentMode.ClaudeCode => "🤖",
+        AgentMode.Codex => "💻",
+        _ => "💬"
+    };
+
+    /// <summary>
+    /// AI 模式标签（computed property，用于 UI 显示）
+    /// </summary>
+    [JsonIgnore]
+    public string ModeLabel => Mode.GetLabel();
+
     public Conversation()
     {
         Id = Guid.NewGuid().ToString();

@@ -346,18 +346,28 @@
 
 **目标：** 完整的多 AI 体验——8 个独立对话、5 种 AI 模式、提供商切换。
 
-### M3.1 多会话管理（Day 1-3）
+### M3.1 多会话管理（Day 1-3）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] 会话列表侧边栏 UI
-- [ ] 新建/切换/删除会话
-- [ ] 最多 8 个独立对话限制
-- [ ] 会话标题自动生成（首条消息摘要）
+- [x] 会话列表侧边栏 UI（ConversationListControl.xaml）
+- [x] 新建/切换/删除会话功能
+- [x] 最多 8 个独立对话限制
+- [x] 会话标题自动生成（首条消息摘要）
+- [x] 删除确认对话框
 
-**验收标准：**
-- 可创建最多 8 个独立对话
-- 切换对话不丢失消息
-- 删除对话有确认提示
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 可创建最多 8 个独立对话（MaxConversations = 8）
+- ✅ 切换对话不丢失消息（Conversations 集合保持）
+- ✅ 删除对话有确认提示（MessageBox.Show）
+
+**关键约束验证：**
+- ✅ TDR-001: DataContext 绑定 ChatViewModel
+- ✅ TDR-007: ObservableProperty 必须有 XAML 绑定（ConnectionStatus 移除 ObservableProperty）
+
+**QA 流程：**
+- 第一次 QA: 发现 TDR-007 违反、InputBindings 错误、未使用属性、PropertyChanged 触发问题
+- 修复: 移除 ConnectionStatus ObservableProperty、添加 OnActiveConversationIDChanged partial method
+- 第二次 QA: ✅ 通过
 
 **依赖：** M1
 

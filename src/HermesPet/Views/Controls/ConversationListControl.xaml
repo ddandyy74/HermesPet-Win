@@ -1,0 +1,155 @@
+<UserControl x:Class="HermesPet.Views.Controls.ConversationListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:models="clr-namespace:HermesPet.Models"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="250">
+
+    <UserControl.Resources>
+        <!-- 会话项样式 -->
+        <Style x:Key="ConversationItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="ItemBorder"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Padding="12,8"
+                                Cursor="Hand">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- AI 模式图标 -->
+                                <TextBlock Grid.Column="0"
+                                          Text="{Binding ModeIcon}"
+                                          FontSize="16"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"/>
+
+                                <!-- 会话信息 -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <!-- 标题 -->
+                                    <TextBlock Text="{Binding Title}"
+                                              FontSize="13"
+                                              FontWeight="SemiBold"
+                                              TextTrimming="CharacterEllipsis"
+                                              Foreground="#333333"/>
+                                    
+                                    <!-- AI 模式标签 -->
+                                    <TextBlock Text="{Binding ModeLabel}"
+                                              FontSize="11"
+                                              Foreground="#999999"
+                                              Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- 未读标记 -->
+                                <Border Grid.Column="2"
+                                       Width="8" Height="8"
+                                       CornerRadius="4"
+                                       Background="#FF6B6B"
+                                       Margin="4,0,0,0"
+                                       Visibility="{Binding HasUnread, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <!-- 鼠标悬停 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+
+                            <!-- 选中 -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#E8F4FD"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter TargetName="ItemBorder" Property="BorderThickness" Value="2,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BoolToVisibilityConverter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="#FAFAFA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部：标题 + 新建按钮 -->
+        <Border Grid.Row="0"
+                Background="#FFFFFF"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1"
+                Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                          Text="对话"
+                          FontSize="16"
+                          FontWeight="SemiBold"
+                          VerticalAlignment="Center"/>
+
+                <Button Grid.Column="1"
+                       Command="{Binding NewConversationCommand}"
+                       ToolTip="新建对话 (Ctrl+Shift+J)"
+                       Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="#2196F3"
+                                   CornerRadius="4"
+                                   Padding="8,4">
+                                <TextBlock Text="+" 
+                                          FontSize="16" 
+                                          FontWeight="Bold"
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- 中部：会话列表 -->
+        <ListBox Grid.Row="1"
+                ItemsSource="{Binding Conversations}"
+                SelectedValue="{Binding ActiveConversationID}"
+                SelectedValuePath="Id"
+                ItemContainerStyle="{StaticResource ConversationItemStyle}"
+                BorderThickness="0"
+                Background="Transparent"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+        </ListBox>
+
+        <!-- 底部：对话数量限制提示 -->
+        <Border Grid.Row="2"
+               Background="#FFFFFF"
+               BorderBrush="#E0E0E0"
+               BorderThickness="0,1,0,0"
+               Padding="16,8">
+            <TextBlock FontSize="11" Foreground="#999999" TextAlignment="Center">
+                <Run Text="{Binding Conversations.Count, Mode=OneWay}"/>
+                <Run Text="/ 8 对话"/>
+            </TextBlock>
+        </Border>
+    </Grid>
+</UserControl>

@@ -81,137 +81,128 @@
     </Window.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- 顶部：对话标签栏 -->
-        <Border Grid.Row="0"
-                Background="White"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,0,0,1">
-            <Grid Margin="8,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <!-- 左侧：会话列表侧边栏（M3.1 多会话管理） -->
+        <controls:ConversationListControl Grid.Column="0"
+                                          Width="250"
+                                          DataContext="{Binding}"/>
 
-                <!-- 对话标签列表 -->
-                <ItemsControl Grid.Column="0"
-                              ItemsSource="{Binding Conversations}"
-                              VerticalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+        <!-- 右侧：聊天主区域 -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 顶部：AI 模式选择器 -->
+            <Border Grid.Row="0"
+                   Background="White"
+                   BorderBrush="#E0E0E0"
+                   BorderThickness="0,0,0,1"
+                   Padding="16,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 当前会话标题 -->
+                    <TextBlock Grid.Column="0"
+                              Text="{Binding ActiveConversation.Title, Mode=OneWay}"
+                              FontSize="16"
+                              FontWeight="SemiBold"
+                              VerticalAlignment="Center"
+                              TextTrimming="CharacterEllipsis"/>
+
+                    <!-- AI 模式下拉菜单 -->
+                    <ComboBox Grid.Column="1"
+                             SelectedIndex="0"
+                             Width="150"
+                             VerticalAlignment="Center">
+                        <ComboBoxItem Content="⚡ Hermes"/>
+                        <ComboBoxItem Content="🌐 在线 AI"/>
+                        <ComboBoxItem Content="🦀 OpenClaw"/>
+                        <ComboBoxItem Content="🤖 Claude Code"/>
+                        <ComboBoxItem Content="💻 Codex"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- 中间：消息列表 -->
+            <ScrollViewer Grid.Row="1"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled"
+                         Padding="8"
+                         Background="#FAFAFA">
+                <ItemsControl ItemsSource="{Binding Messages}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Title}"
-                                    Command="{Binding DataContext.SwitchToConversationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding Id}"
-                                    Style="{StaticResource ConversationTabStyle}"
-                                    Margin="0,0,4,0"/>
+                            <controls:MessageBubble Message="{Binding}"
+                                                   AgentMode="{Binding DataContext.AgentMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+            </ScrollViewer>
 
-                <!-- 新建对话按钮 -->
-                <Button Grid.Column="1"
-                        Content="➕ 新对话"
-                        Command="{Binding NewConversationCommand}"
-                        Background="#F0F0F0"
-                        BorderBrush="#E0E0E0"
-                        BorderThickness="1"
-                        Padding="12,6"
-                        FontSize="12"
-                        Cursor="Hand"
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#E8E8E8"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </Grid>
-        </Border>
+            <!-- 底部：输入区域 -->
+            <Border Grid.Row="2"
+                   Background="White"
+                   BorderBrush="#E0E0E0"
+                   BorderThickness="0,1,0,0"
+                   Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <!-- 中间：消息列表 -->
-        <ScrollViewer Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled"
-                      Padding="8"
-                      Background="#FAFAFA">
-            <ItemsControl ItemsSource="{Binding Messages}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:MessageBubble Message="{Binding}"
-                                               AgentMode="{Binding DataContext.AgentMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                    <!-- 输入框 -->
+                    <TextBox Grid.Column="0"
+                            Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                            FontSize="14"
+                            Padding="8"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="1"
+                            VerticalScrollBarVisibility="Auto"
+                            MaxHeight="120"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Center">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Modifiers="Ctrl"
+                                       Command="{Binding SendMessageCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
 
-        <!-- 底部：输入区域 -->
-        <Border Grid.Row="2"
-                Background="White"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,1,0,0"
-                Padding="12">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- 输入框 -->
-                <TextBox Grid.Column="0"
-                         Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
-                         FontSize="14"
-                         Padding="8"
-                         BorderBrush="#E0E0E0"
-                         BorderThickness="1"
-                         VerticalScrollBarVisibility="Auto"
-                         MaxHeight="120"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         VerticalAlignment="Center">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Modifiers="Ctrl"
-                                   Command="{Binding SendMessageCommand}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
-
-                <!-- 发送按钮 -->
-                <Button Grid.Column="1"
-                        Content="发送"
-                        Command="{Binding SendMessageCommand}"
-                        Style="{StaticResource SendButtonStyle}"
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
+                    <!-- 发送按钮 -->
+                    <Button Grid.Column="1"
+                           Content="发送"
+                           Command="{Binding SendMessageCommand}"
+                           Style="{StaticResource SendButtonStyle}"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- 错误提示 Toast -->
-        <Border Grid.Row="0"
-                Grid.RowSpan="3"
-                Background="#FF4444"
-                Padding="16,8"
-                CornerRadius="4"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Margin="0,60,0,0"
-                Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Border Grid.Column="0"
+               Grid.ColumnSpan="2"
+               Background="#FF4444"
+               Padding="16,8"
+               CornerRadius="4"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top"
+               Margin="0,60,0,0"
+               Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVisibilityConverter}}">
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="White"
-                       FontSize="13"/>
+                      Foreground="White"
+                      FontSize="13"/>
         </Border>
     </Grid>
 </Window>
