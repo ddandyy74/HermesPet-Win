@@ -108,5 +108,76 @@ namespace HermesPet.Views
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             Closed -= OnClosed;
         }
+        
+        #region 位置避让
+        
+        /// <summary>
+        /// 检查并避免与指定窗口重叠
+        /// </summary>
+        /// <param name="otherWindow">其他窗口（如聊天窗口）</param>
+        public void AvoidOverlap(Window otherWindow)
+        {
+            if (otherWindow == null || !otherWindow.IsVisible)
+                return;
+            
+            // 确保在 UI 线程上执行
+            Dispatcher.InvokeAsync(() =>
+            {
+                var petRect = new Rect(Left, Top, Width, Height);
+                var otherRect = new Rect(otherWindow.Left, otherWindow.Top, otherWindow.Width, otherWindow.Height);
+                
+                // 如果没有重叠，不需要调整
+                if (!petRect.IntersectsWith(otherRect))
+                    return;
+                
+                // 计算重叠区域
+                var intersection = Rect.Intersect(petRect, otherRect);
+                
+                // 选择移动方向（优先移动到窗口右侧或下侧）
+                // 计算四个方向的移动距离
+                var moveLeft = intersection.Width;   // 向左移动
+                var moveRight = intersection.Width;  // 向右移动
+                var moveUp = intersection.Height;    // 向上移动
+                var moveDown = intersection.Height;  // 向下移动
+                
+                // 优先选择移动距离最小的方向
+                // 但要确保不会移出屏幕
+                var screen = SystemParameters.WorkArea;
+                
+                // 尝试向右移动
+                if (Left + Width + moveRight <= screen.Right)
+                {
+                    Left += moveRight + 20; // 额外 20px 间距
+                    return;
+                }
+                
+                // 尝试向左移动
+                if (Left - moveLeft - 20 >= screen.Left)
+                {
+                    Left -= moveLeft + 20;
+                    return;
+                }
+                
+                // 尝试向下移动
+                if (Top + Height + moveDown <= screen.Bottom)
+                {
+                    Top += moveDown + 20;
+                    return;
+                }
+                
+                // 尝试向上移动
+                if (Top - moveUp - 20 >= screen.Top)
+                {
+                    Top -= moveUp + 20;
+                    return;
+                }
+                
+                // 如果所有方向都不可行，移动到屏幕右下角
+                Left = screen.Right - Width - 20;
+                Top = screen.Bottom - Height - 20;
+            });
+        }
+        
+        #endregion
     }
 }

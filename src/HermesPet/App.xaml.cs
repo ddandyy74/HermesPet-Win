@@ -2,6 +2,7 @@
 using HermesPet.Services;
 using HermesPet.ViewModels;
 using HermesPet.Views;
+using HermesPet.Windows;
 
 namespace HermesPet;
 
@@ -15,6 +16,10 @@ public partial class App : System.Windows.Application
     private ChatViewModel? _chatViewModel;
     private ChatWindow? _mainWindow;
     private AIClient? _aiClient;
+    
+    // 动态岛相关
+    private IslandViewModel? _islandViewModel;
+    private DynamicIslandWindow? _dynamicIslandWindow;
     
     // 宠物窗口相关
     private PetViewModel? _petViewModel;
@@ -60,10 +65,18 @@ public partial class App : System.Windows.Application
         // 初始化托盘服务
         _trayService = new TrayService(_mainWindow);
         
+        // 初始化动态岛
+        _islandViewModel = new IslandViewModel();
+        _dynamicIslandWindow = new DynamicIslandWindow(_islandViewModel);
+        _dynamicIslandWindow.Show();
+        
         // 初始化宠物窗口
         _petViewModel = new PetViewModel();
         _petWindow = new PetWindow(_petViewModel);
         _petWindow.Show();
+        
+        // 建立动态岛和宠物之间的联动
+        SetupIslandPetLink();
         
         // 初始化热键服务
         _hotkeyService = new HotkeyService();
@@ -73,6 +86,9 @@ public partial class App : System.Windows.Application
         // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
         _mainWindow.Show();
         _mainWindow.SetHotkeyService(_hotkeyService);
+        
+        // 设置宠物位置避让（监听主窗口位置变化）
+        SetupPetPositionAvoidance();
     }
 
     protected override async void OnExit(ExitEventArgs e)
@@ -121,6 +137,100 @@ public partial class App : System.Windows.Application
         _chatViewModel?.NewConversationCommand.Execute(null);
     }
 
+    #endregion
+    
+    #region 岛宠联动
+    
+    /// <summary>
+    /// 建立动态岛和宠物之间的联动
+    /// </summary>
+    private void SetupIslandPetLink()
+    {
+        if (_islandViewModel == null || _petViewModel == null)
+            return;
+        
+        // 1. 监听 ChatViewModel 的 IsLoading 状态，同步到 IslandViewModel
+        if (_chatViewModel != null)
+        {
+            _chatViewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ChatViewModel.IsLoading))
+                {
+                    if (_chatViewModel.IsLoading)
+                    {
+                        _islandViewModel.StartStreaming();
+                    }
+                    else
+                    {
+                        _islandViewModel.StopStreaming();
+                    }
+                }
+                // 同步 ChatViewModel.AgentMode 到 IslandViewModel.CurrentMode
+                else if (e.PropertyName == nameof(ChatViewModel.AgentMode))
+                {
+                    _islandViewModel.CurrentMode = _chatViewModel.AgentMode;
+                }
+            };
+            
+            // 初始同步
+            _islandViewModel.CurrentMode = _chatViewModel.AgentMode;
+            _petViewModel.SetPetByMode(_chatViewModel.AgentMode);
+        }
+        
+        // 2. 监听 IslandViewModel 的任务完成事件，触发宠物情绪台词
+        _islandViewModel.TaskCompleted += (s, e) =>
+        {
+            // 只在长任务时显示情绪台词（>= 30秒）
+            if (e.Context != Models.PetQuoteContext.Idle)
+            {
+                _petViewModel.ShowContextualQuote(e.Context);
+            }
+        };
+        
+        // 3. 监听 IslandViewModel 的 CurrentMode 变化，同步到 PetViewModel
+        _islandViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(IslandViewModel.CurrentMode))
+            {
+                _petViewModel.SetPetByMode(_islandViewModel.CurrentMode);
+            }
+        };
+    }
+    
+    #endregion
+    
+    #region 宠物位置避让
+    
+    /// <summary>
+    /// 设置宠物位置避让（监听主窗口位置和大小变化）
+    /// </summary>
+    private void SetupPetPositionAvoidance()
+    {
+        if (_mainWindow == null || _petWindow == null)
+            return;
+        
+        // 监听主窗口位置变化
+        _mainWindow.LocationChanged += (s, e) =>
+        {
+            _petWindow.AvoidOverlap(_mainWindow);
+        };
+        
+        // 监听主窗口大小变化
+        _mainWindow.SizeChanged += (s, e) =>
+        {
+            _petWindow.AvoidOverlap(_mainWindow);
+        };
+        
+        // 监听主窗口状态变化（最大化/还原）
+        _mainWindow.StateChanged += (s, e) =>
+        {
+            _petWindow.AvoidOverlap(_mainWindow);
+        };
+        
+        // 初始避让
+        _petWindow.AvoidOverlap(_mainWindow);
+    }
+    
     #endregion
 }
 

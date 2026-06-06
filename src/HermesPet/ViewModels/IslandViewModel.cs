@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HermesPet.Models;
 
@@ -11,6 +12,7 @@ namespace HermesPet.ViewModels;
 /// - 监听 ChatViewModel 的 IsStreaming 状态
 /// - 显示当前 AI 模式图标
 /// - 管理工具进度、语音激活、权限请求等状态
+/// - 追踪任务时长，触发宠物情绪台词
 /// 
 /// 状态转换规则：
 /// - Idle ↔ Hovering（鼠标悬停/离开）
@@ -73,6 +75,16 @@ public partial class IslandViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string? _permissionRequest;
+    
+    /// <summary>
+    /// 任务开始时间（用于计算任务时长）
+    /// </summary>
+    private DateTime? _taskStartTime;
+    
+    /// <summary>
+    /// 任务结束事件（用于通知 PetViewModel 显示情绪台词）
+    /// </summary>
+    public event EventHandler<TaskCompletedEventArgs>? TaskCompleted;
 
     #region 状态切换方法
 
@@ -107,6 +119,9 @@ public partial class IslandViewModel : ObservableObject
     {
         IsStreaming = true;
         
+        // 记录任务开始时间
+        _taskStartTime = DateTime.Now;
+        
         // Idle 或 Hovering 状态切换到 Streaming
         if (State == IslandState.Idle || State == IslandState.Hovering)
         {
@@ -120,6 +135,14 @@ public partial class IslandViewModel : ObservableObject
     public void StopStreaming()
     {
         IsStreaming = false;
+        
+        // 计算任务时长并触发事件
+        if (_taskStartTime.HasValue)
+        {
+            var duration = DateTime.Now - _taskStartTime.Value;
+            OnTaskCompleted(duration);
+            _taskStartTime = null;
+        }
         
         // Streaming 状态回到 Idle
         if (State == IslandState.Streaming)
@@ -247,4 +270,46 @@ public partial class IslandViewModel : ObservableObject
     };
 
     #endregion
+    
+    #region 任务时长追踪
+    
+    /// <summary>
+    /// 触发任务完成事件
+    /// </summary>
+    protected virtual void OnTaskCompleted(TimeSpan duration)
+    {
+        TaskCompleted?.Invoke(this, new TaskCompletedEventArgs(duration));
+    }
+    
+    #endregion
+}
+
+/// <summary>
+/// 任务完成事件参数
+/// </summary>
+public class TaskCompletedEventArgs : EventArgs
+{
+    /// <summary>
+    /// 任务时长
+    /// </summary>
+    public TimeSpan Duration { get; }
+    
+    /// <summary>
+    /// 任务时长对应的情境
+    /// </summary>
+    public PetQuoteContext Context { get; }
+    
+    public TaskCompletedEventArgs(TimeSpan duration)
+    {
+        Duration = duration;
+        
+        // 根据时长确定情境
+        Context = duration.TotalSeconds switch
+        {
+            >= 180 => PetQuoteContext.LongTask180s,
+            >= 90 => PetQuoteContext.LongTask90s,
+            >= 30 => PetQuoteContext.LongTask30s,
+            _ => PetQuoteContext.Idle
+        };
+    }
 }
