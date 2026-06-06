@@ -1,0 +1,65 @@
+<Window x:Class="HermesPet.Views.PetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:HermesPet.Views.Controls"
+        xmlns:vm="clr-namespace:HermesPet.ViewModels"
+        
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        
+        Width="120"
+        Height="120"
+        Left="100"
+        Top="100"
+        
+        Title="HermesPet Desk Pet">
+    
+    <!-- 
+    宠物窗口设计要点：
+    1. 透明窗口，无标题栏，始终置顶
+    2. 支持鼠标拖动（通过后台代码 DragMove）
+    3. 支持点击穿透（IsHitTestVisible 切换）
+    4. 宠物精灵显示在中心
+    5. 台词气泡显示在上方（M2.4 实现）
+    -->
+    
+    <Grid x:Name="RootGrid">
+        <!-- 宠物精灵容器 -->
+        <Grid x:Name="PetContainer"
+              Width="80"
+              Height="80"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+            
+            <!-- 宠物精灵控件 -->
+            <controls:PixelPetControl 
+                PetType="{Binding CurrentPetType}"
+                Pose="{Binding CurrentPose}"
+                IsWalking="{Binding IsWalking}"
+                Width="80"
+                Height="80"/>
+        </Grid>
+        
+        <!-- 台词气泡（M2.4 实现） -->
+        <Border x:Name="SpeechBubble"
+                Background="White"
+                BorderBrush="Gray"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="8,4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,-40,0,0"
+                Visibility="Collapsed">
+            <TextBlock Text="{Binding CurrentSpeech}"
+                      FontSize="11"
+                      Foreground="Black"
+                      MaxWidth="150"
+                      TextWrapping="Wrap"/>
+        </Border>
+    </Grid>
+</Window>

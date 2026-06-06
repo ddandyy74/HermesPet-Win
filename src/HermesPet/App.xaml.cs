@@ -15,6 +15,10 @@ public partial class App : System.Windows.Application
     private ChatViewModel? _chatViewModel;
     private ChatWindow? _mainWindow;
     private AIClient? _aiClient;
+    
+    // 宠物窗口相关
+    private PetViewModel? _petViewModel;
+    private PetWindow? _petWindow;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -55,12 +59,17 @@ public partial class App : System.Windows.Application
 
         // 初始化托盘服务
         _trayService = new TrayService(_mainWindow);
-
+        
+        // 初始化宠物窗口
+        _petViewModel = new PetViewModel();
+        _petWindow = new PetWindow(_petViewModel);
+        _petWindow.Show();
+        
         // 初始化热键服务
         _hotkeyService = new HotkeyService();
         _hotkeyService.ToggleWindowHotkeyPressed += OnToggleWindowHotkeyPressed;
         _hotkeyService.NewConversationHotkeyPressed += OnNewConversationHotkeyPressed;
-
+        
         // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
         _mainWindow.Show();
         _mainWindow.SetHotkeyService(_hotkeyService);

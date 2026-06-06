@@ -252,27 +252,32 @@
 
 ---
 
-### M2.3 宠物窗口+像素图动画（Day 8-12）
+### M2.3 宠物窗口+像素图动画（Day 8-12）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Views/PetWindow.xaml` — 宠物窗口（透明、置顶、可拖动）
-- [ ] `Windows/PetWindow.cs` — 窗口逻辑（拖动、点击穿透）
-- [ ] `ViewModels/PetViewModel.cs` — 宠物状态管理
-- [ ] `PixelPetControl.cs` — 像素图动画控件（WriteableBitmap 帧动画）
-- [ ] 5 个宠物角色资源（Clawd, Cloud, fomo, Pegasus, coco）
-- [ ] 宠物动作切换（空闲、行走、说话、反应）
+- [x] `Views/PetWindow.xaml` — 宠物窗口（透明、置顶、可拖动）
+- [x] `Views/PetWindow.xaml.cs` — 窗口逻辑（拖动、点击穿透）
+- [x] `ViewModels/PetViewModel.cs` — 宠物状态管理
+- [x] `Views/Controls/PixelPetControl.cs` — 像素图动画控件（WriteableBitmap 帧动画）
+- [x] 5 个宠物角色资源（Clawd, Cloud, fomo, Pegasus, coco）
+- [x] 宠物动作切换（空闲、行走、说话、反应）
 
-**验收标准：**
-- 宠物显示在桌面上
-- 可用鼠标拖动宠物位置
-- 点击穿透正常（IsHitTestVisible 切换）
-- 帧动画流畅（~6.67 FPS）
-- 5 个宠物角色均可选择
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 宠物显示在桌面上
+- ✅ 可用鼠标拖动宠物位置
+- ✅ 点击穿透正常（IsHitTestVisible 切换）
+- ✅ 帧动画流畅（~6.67 FPS）
+- ✅ 5 个宠物角色均可选择
 
-**关键约束：**
-- TDR-002：宠物交互使用 `HitTest`/`IsHitTestVisible`
-- 性能 P0：图片使用 `BitmapImage.Freeze()` 允许跨线程访问
-- 宠物窗口同样使用 `WindowStyle.None`, `AllowsTransparency=true`, `Topmost=true`
+**关键约束验证：**
+- ✅ TDR-002：宠物交互使用 `IsHitTestVisible` 切换
+- ✅ 性能 P0：使用 WriteableBitmap 代码绘制（无需 Freeze）
+- ✅ 窗口属性：`WindowStyle.None`, `AllowsTransparency=true`, `Topmost=true`
+
+**QA 流程：**
+- 第一次 QA：发现 PetWindow 未集成到应用程序
+- 修复：在 App.xaml.cs 中创建和显示 PetWindow
+- 第二次 QA：✅ 通过
 
 **依赖：** M2.1
 
