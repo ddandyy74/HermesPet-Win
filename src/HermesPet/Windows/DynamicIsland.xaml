@@ -1,25 +1,27 @@
 <Window x:Class="HermesPet.Windows.DynamicIslandWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HermesPet.Windows"
-        xmlns:models="clr-namespace:HermesPet.Models"
-        mc:Ignorable="d"
-        WindowStyle="None"
-        AllowsTransparency="True"
-        Topmost="True"
-        ShowInTaskbar="False"
-        Background="Transparent"
-        Width="280"
-        Height="36">
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:local="clr-namespace:HermesPet.Windows"
+         xmlns:models="clr-namespace:HermesPet.Models"
+         mc:Ignorable="d"
+         WindowStyle="None"
+         AllowsTransparency="True"
+         Topmost="True"
+         ShowInTaskbar="False"
+         Background="Transparent"
+         Width="280"
+         Height="36"
+         x:Name="DynamicIslandRoot">
 
     <Window.Resources>
         <!-- 胶囊形状模板 -->
         <ControlTemplate x:Key="CapsuleTemplate" TargetType="ContentControl">
             <Grid>
                 <!-- 胶囊背景 -->
-                <Border Background="{TemplateBinding Background}"
+                <Border x:Name="CapsuleBorder"
+                        Background="{TemplateBinding Background}"
                         CornerRadius="18"
                         BorderThickness="0">
                     <ContentPresenter HorizontalAlignment="Center"
@@ -30,12 +32,89 @@
 
         <!-- 状态背景色转换器 -->
         <local:StateToBackgroundConverter x:Key="StateToBackgroundConverter"/>
+
+        <!-- 展开动画（紧凑态 → 扩展态） -->
+        <!-- 触发：Idle → Hovering -->
+        <!-- 时长：300ms -->
+        <!-- 缓动：CubicEase EaseOut -->
+        <!-- 注意：移除 From 属性，让动画从当前值开始 -->
+        <Storyboard x:Key="ExpandAnimation"
+                    Duration="0:0:0.300"
+                    Completed="OnExpandAnimationCompleted">
+            <DoubleAnimation Storyboard.TargetProperty="Width"
+                           To="360"
+                           Duration="0:0:0.300">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="Height"
+                           To="80"
+                           Duration="0:0:0.300">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- 收起动画（扩展态 → 紧凑态） -->
+        <!-- 触发：Hovering → Idle -->
+        <!-- 时长：200ms -->
+        <!-- 缓动：CubicEase EaseIn -->
+        <!-- 注意：移除 From 属性，让动画从当前值开始 -->
+        <Storyboard x:Key="CollapseAnimation"
+                    Duration="0:0:0.200"
+                    Completed="OnCollapseAnimationCompleted">
+            <DoubleAnimation Storyboard.TargetProperty="Width"
+                           To="180"
+                           Duration="0:0:0.200">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="Height"
+                           To="40"
+                           Duration="0:0:0.200">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- 流式传输脉冲动画 -->
+        <!-- 触发：State == Streaming -->
+        <!-- 周期：1.5s 循环 -->
+        <Storyboard x:Key="StreamingPulseAnimation"
+                    RepeatBehavior="Forever"
+                    Duration="0:0:1.5">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                         Storyboard.TargetName="CapsuleBorder">
+                <EasingColorKeyFrame KeyTime="0:0:0.0" Value="#0A84FF"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.75" Value="#064582"/>
+                <EasingColorKeyFrame KeyTime="0:0:1.5" Value="#0A84FF"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <!-- 错误状态闪烁动画 -->
+        <!-- 触发：State == Error -->
+        <!-- 周期：500ms 循环 -->
+        <Storyboard x:Key="ErrorFlashAnimation"
+                    RepeatBehavior="Forever"
+                    Duration="0:0:0.500">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                         Storyboard.TargetName="CapsuleBorder">
+                <EasingColorKeyFrame KeyTime="0:0:0.0" Value="#FF453A"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.25" Value="#CC3630"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.50" Value="#FF453A"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
 
     <!-- 主容器 -->
     <Grid>
         <!-- 胶囊形动态岛 -->
-        <ContentControl Template="{StaticResource CapsuleTemplate}"
+        <ContentControl x:Name="IslandContentControl"
+                       Template="{StaticResource CapsuleTemplate}"
                        Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
             <Grid Margin="16,0">
                 <!-- Idle/Hovering 状态：显示 AI 模式图标和名称 -->
@@ -58,7 +137,7 @@
                 <StackPanel Orientation="Horizontal"
                            VerticalAlignment="Center"
                            Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=Streaming}">
-                    <!-- 脉冲动画（占位，后续实现 Storyboard） -->
+                    <!-- 脉冲动画指示器 -->
                     <TextBlock Text="💫" FontSize="16" VerticalAlignment="Center"/>
                     
                     <TextBlock Text="正在思考..."
