@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：0%
+> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：9%
 
 ---
 
@@ -8,15 +8,15 @@
 
 | 里程碑 | 状态 | 进度 | 开始 | 完成 | 预估工期 | 实际工期 |
 |--------|------|------|------|------|---------|---------|
-| M1 核心框架 | ⬜ 未开始 | 0/20 | - | - | 2-3 周 | - |
+| M1 核心框架 | 🔄 进行中 | 6/20 | 2026-06-07 | - | 2-3 周 | - |
 | M2 动态岛+宠物 | ⬜ 未开始 | 0/15 | - | - | 2-3 周 | - |
 | M3 多会话+多AI | ⬜ 未开始 | 0/10 | - | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 0/65 任务
-██████████████████████████████████████████████████ 0%
+总进度: 6/65 任务
+███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 9%
 ```
 
 ---
@@ -29,12 +29,12 @@
 
 | ID | 任务 | 负责人 | 状态 | 备注 |
 |----|------|--------|------|------|
-| M1.1.1 | 创建 .NET 8 WPF 项目 | - | ⬜ | `dotnet new wpf -n HermesPet -o src/HermesPet` |
-| M1.1.2 | 添加 NuGet 包（CommunityToolkit.Mvvm, NAudio, System.Text.Json） | - | ⬜ | 参考 QUICKSTART.md §2 |
-| M1.1.3 | 创建目录结构（Models/ ViewModels/ Views/ Services/ Windows/ Converters/ Helpers/ Resources/） | - | ⬜ | 参考 DEVELOPMENT_GUIDE.md §3.3 |
-| M1.1.4 | 配置 .gitignore | - | ⬜ | bin/ obj/ .vs/ *.user |
-| M1.1.5 | 验证 `dotnet build` + `dotnet run` | - | ⬜ | 启动空窗口 |
-| M1.1.6 | 创建 App.xaml + App.xaml.cs 启动入口 | - | ⬜ | |
+| M1.1.1 | 创建 .NET 8 WPF 项目 | - | ✅ | `dotnet new wpf -n HermesPet -o src/HermesPet` |
+| M1.1.2 | 添加 NuGet 包（CommunityToolkit.Mvvm, NAudio, System.Text.Json） | - | ✅ | 参考 QUICKSTART.md §2 |
+| M1.1.3 | 创建目录结构（Models/ ViewModels/ Views/ Services/ Windows/ Converters/ Helpers/ Resources/） | - | ✅ | 参考 DEVELOPMENT_GUIDE.md §3.3 |
+| M1.1.4 | 配置 .gitignore | - | ✅ | bin/ obj/ .vs/ *.user |
+| M1.1.5 | 验证 `dotnet build` + `dotnet run` | - | ✅ | 启动空窗口 |
+| M1.1.6 | 创建 App.xaml + App.xaml.cs 启动入口 | - | ✅ | |
 
 ### M1.2 数据模型
 
@@ -398,6 +398,7 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M1.1 | 项目骨架完成（6/6 任务） | 无 | 开始 M1.2 数据模型 |
 | 2026-06-07 | - | MILESTONES.md + TRACKING.md 创建 | 无 | 开始 M1.1 项目骨架 |
 
 ---

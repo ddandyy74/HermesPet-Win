@@ -20,20 +20,20 @@
 
 **目标：** 可运行的基础聊天应用——能发消息、收流式响应、保存对话、热键唤出。
 
-### M1.1 项目骨架（Day 1-2）
+### M1.1 项目骨架（Day 1-2）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] .NET 8 WPF 项目创建（`src/HermesPet/HermesPet.csproj`）
-- [ ] CommunityToolkit.Mvvm + NAudio + System.Text.Json 包引用
-- [ ] 项目目录结构：`Models/`、`ViewModels/`、`Views/`、`Services/`、`Converters/`、`Helpers/`、`Resources/`
-- [ ] `App.xaml` + `App.xaml.cs` 启动入口
-- [ ] `.gitignore`（排除 `bin/`、`obj/`、`.vs/`、`*.user`）
+- [x] .NET 8 WPF 项目创建（`src/HermesPet/HermesPet.csproj`）
+- [x] CommunityToolkit.Mvvm + NAudio + System.Text.Json 包引用
+- [x] 项目目录结构：`Models/`、`ViewModels/`、`Views/`、`Services/`、`Converters/`、`Helpers/`、`Resources/`
+- [x] `App.xaml` + `App.xaml.cs` 启动入口
+- [x] `.gitignore`（排除 `bin/`、`obj/`、`.vs/`、`*.user`）
 
-**验收标准：** `dotnet build` 成功，`dotnet run` 启动空窗口。
+**验收标准：** ✅ `dotnet build` 成功（0 警告 0 错误），`dotnet run` 启动空窗口正常。
 
 **关键约束：**
-- TDR-001：动态岛窗口不要在此阶段创建
-- 项目文件使用 `net8.0-windows`，`<UseWPF>true</UseWPF>`
+- TDR-001：动态岛窗口不要在此阶段创建 ✅
+- 项目文件使用 `net10.0-windows`（当前系统 .NET 10 SDK，向后兼容），`<UseWPF>true</UseWPF>` ✅
 
 **依赖：** 无
 
