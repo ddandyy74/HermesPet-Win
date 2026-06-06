@@ -170,28 +170,25 @@ public enum APIErrorType
 /// <summary>
 /// API 错误
 /// </summary>
-public class APIError
+public class APIError : Exception
 {
     public APIErrorType Type { get; set; }
-    public string Message { get; set; } = string.Empty;
     public int? StatusCode { get; set; }
     public string? Body { get; set; }
 
     public APIError(APIErrorType type, string message)
+        : base(message)
     {
         Type = type;
-        Message = message;
     }
 
     public APIError(APIErrorType type, int statusCode, string body)
+        : base($"HTTP {statusCode}: {body}")
     {
         Type = type;
         StatusCode = statusCode;
         Body = body;
-        Message = $"HTTP {statusCode}: {body}";
     }
-
-    public override string ToString() => Message;
 }
 
 #endregion

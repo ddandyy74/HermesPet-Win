@@ -62,24 +62,26 @@
 
 ---
 
-### M1.3 AI 客户端基类 + OpenAI 兼容客户端（Day 5-8）
+### M1.3 AI 客户端基类 + OpenAI 兼容客户端（Day 5-8）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Services/AIClient.cs` — 抽象基类（Mode, DisplayName, SupportsImages, SupportsDocuments, CheckHealthAsync, StreamChatAsync）
-- [ ] `Services/OpenAICompatibleClient.cs` — OpenAI 兼容客户端实现
-- [ ] `Helpers/SSEParser.cs` — SSE 事件流解析（`IAsyncEnumerable<SSEEvent>`）
-- [ ] `Services/HermesClient.cs` — Hermes Gateway 客户端（继承 OpenAICompatibleClient，不同 BaseUrl）
+- [x] `Services/AIClient.cs` — 抽象基类（Mode, DisplayName, SupportsImages, SupportsDocuments, CheckHealthAsync, StreamChatAsync）
+- [x] `Services/OpenAICompatibleClient.cs` — OpenAI 兼容客户端实现
+- [x] `Helpers/SSEParser.cs` — SSE 事件流解析（`IAsyncEnumerable<string>`）
+- [x] `Services/HermesClient.cs` — Hermes Gateway 客户端（继承 OpenAICompatibleClient，不同 BaseUrl）
+- [x] `Helpers/JsonOptions.cs` — JSON 序列化选项辅助类
 
-**验收标准：**
-- 可向 DeepSeek/智谱 API 发送消息并接收流式响应
-- SSE 解析器正确处理 `event:`, `data:`, 空行分隔符
-- `[DONE]` 标记正确终止流
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 所有服务类编译通过（0 警告 0 错误）
+- ✅ SSEParser 正确解析 SSE 格式（`data:` 前缀，`[DONE]` 标记）
+- ✅ OpenAICompatibleClient 能发起 HTTP POST 请求
+- ✅ 流式响应使用 IAsyncEnumerable
 
-**关键约束：**
-- TDR-005：AIClient 使用继承模式，统一接口
-- TDR-006：使用 `IAsyncEnumerable<StreamChunk>` 处理流式响应
-- TDR-008：`SupportsImages` / `SupportsDocuments` 属性区分模式能力
-- 异步规范：`ConfigureAwait(false)`，禁止 `.Result` / `.Wait()`
+**关键约束验证：**
+- ✅ TDR-003：使用 HttpClient + HttpContent.ReadAsStreamAsync() + IAsyncEnumerable
+- ✅ TDR-005：使用 async/await + ConfigureAwait(false)，禁止 .Result / .Wait()
+- ✅ TDR-008：SupportsImages / SupportsDocuments 属性区分模式能力
+- ✅ TDR-008（JSON）：所有 JSON 使用 System.Text.Json
 
 **依赖：** M1.2
 

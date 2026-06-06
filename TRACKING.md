@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：17%
+> 最后更新：2026-06-07 | 当前阶段：M1 核心框架 | 进度：20%
 
 ---
 
@@ -8,12 +8,15 @@
 
 | 里程碑 | 状态 | 进度 | 开始 | 完成 | 预估工期 | 实际工期 |
 |--------|------|------|------|------|---------|---------|
-| M1 核心框架 | 🔄 进行中 | 11/20 | 2026-06-07 | - | 2-3 周 | - |
+| M1 核心框架 | 🔄 进行中 | 15/20 | 2026-06-07 | - | 2-3 周 | - |
 | M2 动态岛+宠物 | ⬜ 未开始 | 0/15 | - | - | 2-3 周 | - |
 | M3 多会话+多AI | ⬜ 未开始 | 0/10 | - | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
+```
+总进度: 15/65 任务
+███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 23%
 ```
 总进度: 11/65 任务
 █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 17%
@@ -50,10 +53,11 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M1.3.1 | `Services/AIClient.cs` 抽象基类 | APIClient.swift | ⬜ | Mode/DisplayName/SupportsImages/StreamChatAsync |
-| M1.3.2 | `Helpers/SSEParser.cs` | APIClient.swift | ⬜ | IAsyncEnumerable<SSEEvent> 流式解析 |
-| M1.3.3 | `Services/OpenAICompatibleClient.cs` | APIClient.swift | ⬜ | POST /v1/chat/completions + SSE 流 |
-| M1.3.4 | `Services/HermesClient.cs` | HermesGatewayManager.swift | ⬜ | 继承 OpenAICompatibleClient，Hermes BaseUrl |
+| M1.3.1 | `Services/AIClient.cs` 抽象基类 | APIClient.swift | ✅ | SendAsync/StreamAsync/CheckHealthAsync/FetchModelsAsync + SupportsImages/Documents |
+| M1.3.2 | `Helpers/SSEParser.cs` | APIClient.swift | ✅ | IAsyncEnumerable<string> 流式解析 |
+| M1.3.3 | `Services/OpenAICompatibleClient.cs` | APIClient.swift | ✅ | POST /v1/chat/completions + SSE 流 |
+| M1.3.4 | `Services/HermesClient.cs` | HermesGatewayManager.swift | ✅ | 继承 OpenAICompatibleClient，Hermes BaseUrl |
+| M1.3.5 | `Helpers/JsonOptions.cs` | - | ✅ | System.Text.Json 配置（snake_case） |
 
 ### M1.4 ChatViewModel + UI
 
@@ -398,6 +402,7 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M1.3 | AI 客户端基类完成（5/5 任务）+ TDR 修复（SupportsImages/Documents 属性） | 无 | 开始 M1.4 ChatViewModel + UI |
 | 2026-06-07 | M1.2 | 数据模型完成 + TDR 修复（TDR-018 TODO 注释, TDR-010 Images 双重引用） | 无 | 开始 M1.3 AI 客户端 |
 | 2026-06-07 | M1.1 | 项目骨架完成（6/6 任务） | 无 | 开始 M1.2 数据模型 |
 | 2026-06-07 | - | MILESTONES.md + TRACKING.md 创建 | 无 | 开始 M1.1 项目骨架 |
