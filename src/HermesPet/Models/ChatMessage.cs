@@ -34,7 +34,16 @@ public class ChatMessage
     public string Content { get; set; }
 
     /// <summary>
-    /// 图片在磁盘上的绝对路径
+    /// 附加的图片数据（PNG 编码后的 byte[]）。
+    /// 内存中持有，重启后从 ImagePaths 恢复。
+    /// 不序列化进 JSON（避免 JSON 爆大）。
+    /// </summary>
+    [JsonIgnore]
+    public List<byte[]> Images { get; set; }
+
+    /// <summary>
+    /// 图片在磁盘上的绝对路径（%APPDATA%/HermesPet/images/...）。
+    /// 序列化进 JSON，重启后用这些路径恢复 Images。
     /// </summary>
     public List<string> ImagePaths { get; set; }
 
@@ -58,6 +67,7 @@ public class ChatMessage
     {
         Id = Guid.NewGuid().ToString();
         Content = string.Empty;
+        Images = new List<byte[]>();
         ImagePaths = new List<string>();
         DocumentPaths = new List<string>();
         Timestamp = DateTime.Now;
@@ -67,6 +77,7 @@ public class ChatMessage
     public ChatMessage(
         MessageRole role,
         string content,
+        List<byte[]>? images = null,
         List<string>? imagePaths = null,
         List<string>? documentPaths = null,
         bool isStreaming = false)
@@ -74,6 +85,7 @@ public class ChatMessage
         Id = Guid.NewGuid().ToString();
         Role = role;
         Content = content;
+        Images = images ?? new List<byte[]>();
         ImagePaths = imagePaths ?? new List<string>();
         DocumentPaths = documentPaths ?? new List<string>();
         Timestamp = DateTime.Now;

@@ -38,6 +38,13 @@ public enum AgentMode
 
 /// <summary>
 /// AgentMode 扩展方法
+/// 
+/// TODO: 添加新 AgentMode 时，请更新以下方法：
+/// - GetLabel(): 显示名称映射
+/// - GetIconName(): 图标名称映射
+/// 
+/// 同时需搜索项目中所有 AgentMode switch 语句进行更新：
+/// - grep -r "AgentMode" --include="*.cs" | grep "switch"
 /// </summary>
 public static class AgentModeExtensions
 {

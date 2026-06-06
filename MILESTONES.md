@@ -42,19 +42,19 @@
 ### M1.2 数据模型（Day 3-4）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [x] `Models/ChatMessage.cs` — 消息模型（Role, Content, ImagePaths, DocumentPaths, IsStreaming）
+- [x] `Models/ChatMessage.cs` — 消息模型（Role, Content, Images, ImagePaths, DocumentPaths, IsStreaming）
 - [x] `Models/Conversation.cs` — 会话模型（Id, Title, Messages, Mode, HasUnread, IsStreaming）
-- [x] `Models/AgentMode.cs` — AI 模式枚举（Hermes, OnlineAI, OpenClaw, ClaudeCode, Codex）
+- [x] `Models/AgentMode.cs` — AI 模式枚举（Hermes, OnlineAI, OpenClaw, ClaudeCode, Codex）+ TODO 注释
 - [x] `Models/APIModels.cs` — API 请求/响应模型（OpenAIChunk, StreamChunk, ConnectionStatus 等）
 - [x] `Models/CanvasBoard.cs` — 画布/任务卡片模型
 
-**验收标准：** ✅ 所有模型类编译通过，`AgentMode` 枚举包含 5 个成员。
+**验收标准：** ✅ 所有模型类编译通过，`AgentMode` 枚举包含 5 个成员，TDR 约束全部满足。
 
-**关键约束：**
-- TDR-014：`OnlineAI` 是独立模式
-- TDR-018：添加新模式时需 grep 所有 `AgentMode` switch（留 TODO 注释）
-- TDR-009：`ChatMessage.DocumentPaths` 用路径而非内容
-- TDR-010：`ChatMessage.ImagePaths` 双重引用
+**关键约束验证：**
+- ✅ TDR-014：`OnlineAI` 是独立模式，JSON 映射为 `"direct_api"`
+- ✅ TDR-018：`AgentModeExtensions` 包含完整 TODO 注释，提醒未来维护者
+- ✅ TDR-009：`ChatMessage.DocumentPaths` 用路径而非内容
+- ✅ TDR-010：`ChatMessage.Images`（内存）+ `ImagePaths`（磁盘）双重引用设计
 
 **依赖：** M1.1
 
