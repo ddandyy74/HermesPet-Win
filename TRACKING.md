@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M3 多会话+多AI | 进度：4%
+> 最后更新：2026-06-07 | 当前阶段：M3 多会话+多AI | 进度：72%
 
 ---
 
@@ -10,19 +10,13 @@
 |--------|------|------|------|------|---------|---------|
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ✅ 已完成 | 21/21 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
-| M3 多会话+多AI | 🔄 进行中 | 4/10 | 2026-06-07 | - | 2 周 | - |
+| M3 多会话+多AI | 🔄 进行中 | 9/10 | 2026-06-07 | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 49/75 任务
-████████████████████████████████████████████████████████░░░░░░░░ 65%
-```
-总进度: 45/75 任务
-█████████████████████████████████████████████████████░░░░░░░░ 60%
-```
-总进度: 45/75 任务
-█████████████████████████████████████████████████████░░░░░░░░ 60%
+总进度: 54/75 任务
+████████████████████████████████████████████████████████████░░░░░░ 72%
 ```
 
 ---
@@ -170,15 +164,15 @@
 | M3.1.3 | 会话标题自动生成 | ✅ | AutoTitleIfNeeded 方法 |
 | M3.1.4 | 删除确认对话框 | ✅ | MessageBox.Show |
 
-### M3.2 剩余 AI 客户端
+### M3.2 剩余 AI 客户端 ✅ 已完成（2026-06-07）
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M3.2.1 | `Services/OnlineAIClient.cs` | OpenCodeClient.swift | ⬜ | 内置 opencode 服务 |
-| M3.2.2 | `Services/OpenClawClient.cs` | OpenClawGatewayManager.swift | ⬜ | OpenClaw 网关 |
-| M3.2.3 | `Services/ClaudeCodeClient.cs` | ClaudeCodeClient.swift | ⬜ | CLI 进程管理 |
-| M3.2.4 | `Services/CodexClient.cs` | CodexClient.swift | ⬜ | CLI 进程管理 |
-| M3.2.5 | AI 客户端工厂 | - | ⬜ | AgentMode → Client 映射 |
+| M3.2.1 | `Services/OnlineAIClient.cs` | OpenCodeClient.swift | ✅ | 内置 opencode 服务 |
+| M3.2.2 | `Services/OpenClawClient.cs` | OpenClawGatewayManager.swift | ✅ | OpenClaw 网关，自动读取 token |
+| M3.2.3 | `Services/ClaudeCodeClient.cs` | ClaudeCodeClient.swift | ✅ | CLI 进程管理，stream-json 解析 |
+| M3.2.4 | `Services/CodexClient.cs` | CodexClient.swift | ✅ | CLI 进程管理，stream 输出 |
+| M3.2.5 | `Services/AIClientFactory.cs` | - | ✅ | AgentMode → Client 映射 |
 
 ### M3.3 连接状态+模型列表
 
