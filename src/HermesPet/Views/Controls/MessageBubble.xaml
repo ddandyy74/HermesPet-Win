@@ -1,0 +1,146 @@
+<UserControl x:Class="HermesPet.Views.Controls.MessageBubble"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:models="clr-namespace:HermesPet.Models"
+             xmlns:converters="clr-namespace:HermesPet.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="100" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converters:RoleToAlignmentConverter x:Key="RoleToAlignmentConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- 用户消息样式（蓝色背景） -->
+        <Style x:Key="UserBubbleStyle" TargetType="Border">
+            <Setter Property="Background" Value="#DCF8C6"/>
+            <Setter Property="CornerRadius" Value="12,12,4,12"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+
+        <!-- AI 消息样式（灰色背景） -->
+        <Style x:Key="AssistantBubbleStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="CornerRadius" Value="12,12,12,4"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8,4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- AI 头像（左侧） -->
+        <Border Grid.Column="0"
+                Width="32" Height="32"
+                CornerRadius="16"
+                Background="#E8E8E8"
+                Margin="0,0,8,0"
+                Visibility="{Binding IsUser, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Hidden}">
+            <TextBlock Text="🤖" 
+                       FontSize="16" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- 消息内容区域 -->
+        <StackPanel Grid.Column="1"
+                    HorizontalAlignment="{Binding Role, Converter={StaticResource RoleToAlignmentConverter}}">
+            
+            <!-- 角色标签 + 时间戳 -->
+            <TextBlock FontSize="11" 
+                       Foreground="#999999"
+                       Margin="4,0,0,2">
+                <Run Text="{Binding RoleLabel, Mode=OneWay}"/>
+                <Run Text=" · "/>
+                <Run Text="{Binding TimeString, Mode=OneWay}"/>
+            </TextBlock>
+
+            <!-- 消息气泡 -->
+            <Border Style="{Binding BubbleStyle}">
+                <StackPanel>
+                    <!-- 消息内容 -->
+                    <TextBlock Text="{Binding Content}"
+                               TextWrapping="Wrap"
+                               FontSize="13"
+                               LineHeight="18"
+                               MaxWidth="500">
+                        <TextBlock.Resources>
+                            <!-- 流式加载动画 -->
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsStreaming}" Value="True">
+                                        <Setter Property="Foreground" Value="#666666"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Resources>
+                    </TextBlock>
+
+                    <!-- 流式加载指示器 -->
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding IsStreaming, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Margin="0,4,0,0">
+                        <TextBlock Text="●" FontSize="8" Foreground="#999999" Margin="0,0,2,0">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                           From="0.3" To="1.0" Duration="0:0:0.6"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+                        <TextBlock Text="●" FontSize="8" Foreground="#999999" Margin="0,0,2,0">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" BeginTime="0:0:0.2">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                           From="0.3" To="1.0" Duration="0:0:0.6"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+                        <TextBlock Text="●" FontSize="8" Foreground="#999999">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" BeginTime="0:0:0.4">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                           From="0.3" To="1.0" Duration="0:0:0.6"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- 用户头像（右侧，与 AI 头像同一列） -->
+        <Border Grid.Column="0"
+                Width="32" Height="32"
+                CornerRadius="16"
+                Background="#DCF8C6"
+                Margin="0,0,8,0"
+                HorizontalAlignment="Right">
+            <Border.Visibility>
+                <Binding Path="IsUser" Converter="{StaticResource BoolToVisibilityConverter}"/>
+            </Border.Visibility>
+            <TextBlock Text="👤" 
+                       FontSize="16" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</UserControl>

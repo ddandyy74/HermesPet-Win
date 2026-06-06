@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace HermesPet.Models;
@@ -37,7 +38,7 @@ public class Conversation
     /// <summary>
     /// 消息列表
     /// </summary>
-    public List<ChatMessage> Messages { get; set; }
+    public ObservableCollection<ChatMessage> Messages { get; set; }
 
     /// <summary>
     /// 该对话锁定的 AI 后端（创建时设置，发第一条 user 消息后锁死不可改）
@@ -85,7 +86,7 @@ public class Conversation
     {
         Id = Guid.NewGuid().ToString();
         Title = "新对话";
-        Messages = new List<ChatMessage>();
+        Messages = new ObservableCollection<ChatMessage>();
         Mode = AgentMode.Hermes;
         Kind = ConversationKind.Chat;
         Canvas = null;
@@ -103,7 +104,7 @@ public class Conversation
     {
         Id = Guid.NewGuid().ToString();
         Title = title;
-        Messages = new List<ChatMessage>();
+        Messages = new ObservableCollection<ChatMessage>();
         Mode = mode;
         Kind = kind;
         Canvas = canvas;

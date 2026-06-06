@@ -1,0 +1,217 @@
+<Window x:Class="HermesPet.Views.ChatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:HermesPet.ViewModels"
+        xmlns:controls="clr-namespace:HermesPet.Views.Controls"
+        xmlns:converters="clr-namespace:HermesPet.Converters"
+        mc:Ignorable="d"
+        Title="HermesPet"
+        Height="600" Width="900"
+        MinHeight="400" MinWidth="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        d:DataContext="{d:DesignInstance vm:ChatViewModel}">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- 对话标签样式 -->
+        <Style x:Key="ConversationTabStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EBEBEB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 激活对话标签样式 -->
+        <Style x:Key="ActiveConversationTabStyle" TargetType="Button" BasedOn="{StaticResource ConversationTabStyle}">
+            <Setter Property="BorderBrush" Value="#0078D4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- 发送按钮样式 -->
+        <Style x:Key="SendButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#106EBE"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#CCCCCC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部：对话标签栏 -->
+        <Border Grid.Row="0"
+                Background="White"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 对话标签列表 -->
+                <ItemsControl Grid.Column="0"
+                              ItemsSource="{Binding Conversations}"
+                              VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Title}"
+                                    Command="{Binding DataContext.SwitchToConversationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding Id}"
+                                    Style="{StaticResource ConversationTabStyle}"
+                                    Margin="0,0,4,0"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- 新建对话按钮 -->
+                <Button Grid.Column="1"
+                        Content="➕ 新对话"
+                        Command="{Binding NewConversationCommand}"
+                        Background="#F0F0F0"
+                        BorderBrush="#E0E0E0"
+                        BorderThickness="1"
+                        Padding="12,6"
+                        FontSize="12"
+                        Cursor="Hand"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E8E8E8"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- 中间：消息列表 -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="8"
+                      Background="#FAFAFA">
+            <ItemsControl ItemsSource="{Binding Messages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:MessageBubble Message="{Binding}"
+                                               AgentMode="{Binding DataContext.AgentMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- 底部：输入区域 -->
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0"
+                Padding="12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 输入框 -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="14"
+                         Padding="8"
+                         BorderBrush="#E0E0E0"
+                         BorderThickness="1"
+                         VerticalScrollBarVisibility="Auto"
+                         MaxHeight="120"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Modifiers="Ctrl"
+                                   Command="{Binding SendMessageCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <!-- 发送按钮 -->
+                <Button Grid.Column="1"
+                        Content="发送"
+                        Command="{Binding SendMessageCommand}"
+                        Style="{StaticResource SendButtonStyle}"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- 错误提示 Toast -->
+        <Border Grid.Row="0"
+                Grid.RowSpan="3"
+                Background="#FF4444"
+                Padding="16,8"
+                CornerRadius="4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,60,0,0"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="White"
+                       FontSize="13"/>
+        </Border>
+    </Grid>
+</Window>

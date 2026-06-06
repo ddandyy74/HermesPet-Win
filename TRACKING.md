@@ -8,18 +8,15 @@
 
 | 里程碑 | 状态 | 进度 | 开始 | 完成 | 预估工期 | 实际工期 |
 |--------|------|------|------|------|---------|---------|
-| M1 核心框架 | 🔄 进行中 | 15/20 | 2026-06-07 | - | 2-3 周 | - |
+| M1 核心框架 | ✅ 已完成 | 20/20 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ⬜ 未开始 | 0/15 | - | - | 2-3 周 | - |
 | M3 多会话+多AI | ⬜ 未开始 | 0/10 | - | - | 2 周 | - |
 | M4 高级功能 | ⬜ 未开始 | 0/12 | - | - | 2-3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 15/65 任务
-███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 23%
-```
-总进度: 11/65 任务
-█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 17%
+总进度: 20/65 任务
+███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 31%
 ```
 
 ---
@@ -63,11 +60,11 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M1.4.1 | `ViewModels/ChatViewModel.cs` 核心 | ChatViewModel.swift | ⬜ | Conversations/ActiveConversation/SendMessage/NewConversation |
-| M1.4.2 | `Views/ChatWindow.xaml` 主窗口 | ChatView.swift | ⬜ | 消息列表+输入框+发送按钮布局 |
-| M1.4.3 | `Views/Controls/MessageBubble.xaml` | ChatComponents.swift | ⬜ | 用户/AI 消息气泡 |
-| M1.4.4 | `Converters/RoleToAlignmentConverter.cs` | - | ⬜ | 用户右对齐 / AI 左对齐 |
-| M1.4.5 | `Converters/BoolToVisibilityConverter.cs` | - | ⬜ | 布尔→可见性 |
+| M1.4.1 | `ViewModels/ChatViewModel.cs` 核心 | ChatViewModel.swift | ✅ | Conversations/ActiveConversation/SendMessage/NewConversation/SwitchToConversation |
+| M1.4.2 | `Views/ChatWindow.xaml` 主窗口 | ChatView.swift | ✅ | 消息列表+输入框+发送按钮布局 |
+| M1.4.3 | `Views/Controls/MessageBubble.xaml` | ChatComponents.swift | ✅ | 用户/AI 消息气泡 |
+| M1.4.4 | `Converters/RoleToAlignmentConverter.cs` | - | ✅ | 用户右对齐 / AI 左对齐 |
+| M1.4.5 | `Converters/BoolToVisibilityConverter.cs` | - | ✅ | 布尔→可见性 |
 
 ### M1.5 存储 + 系统托盘
 
@@ -88,7 +85,7 @@
 
 ### M1 验收检查清单
 
-- [ ] `dotnet build` 无警告
+- [x] `dotnet build` 无警告
 - [ ] 可发送消息并接收流式 AI 响应
 - [ ] 对话可保存和加载（重启验证）
 - [ ] Ctrl+Shift+H 显示/隐藏窗口

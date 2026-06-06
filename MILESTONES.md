@@ -89,25 +89,27 @@
 
 ---
 
-### M1.4 ChatViewModel + 基础聊天 UI（Day 9-12）
+### M1.4 ChatViewModel + 基础聊天 UI（Day 9-12）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `ViewModels/ChatViewModel.cs` — 核心业务逻辑（Conversations, ActiveConversation, SendMessageAsync, NewConversation）
-- [ ] `Views/ChatWindow.xaml` — 主聊天窗口布局
-- [ ] `Views/Controls/MessageBubble.xaml` — 消息气泡控件
-- [ ] `Converters/RoleToAlignmentConverter.cs` — 消息对齐转换器
-- [ ] `Converters/BoolToVisibilityConverter.cs` — 布尔可见性转换器
+- [x] `ViewModels/ChatViewModel.cs` — 核心业务逻辑（Conversations, ActiveConversation, SendMessageAsync, NewConversation）
+- [x] `Views/ChatWindow.xaml` — 主聊天窗口布局
+- [x] `Views/Controls/MessageBubble.xaml` — 消息气泡控件
+- [x] `Converters/RoleToAlignmentConverter.cs` — 消息对齐转换器
+- [x] `Converters/BoolToVisibilityConverter.cs` — 布尔可见性转换器
 
-**验收标准：**
-- UI 可显示用户消息和 AI 回复
-- 消息气泡左右对齐（用户右，AI 左）
-- 发送按钮绑定 `SendMessageCommand`
-- 消息列表使用 `VirtualizingPanel.IsVirtualizing="True"`（TDR 性能 P0）
+**验收标准：** ✅ 所有验收标准通过
+- ✅ UI 可显示用户消息和 AI 回复
+- ✅ 消息气泡左右对齐（用户右，AI 左）
+- ✅ 发送按钮绑定 `SendMessageCommand`
+- ✅ 消息列表使用 `VirtualizingPanel.IsVirtualizing="True"`（TDR 性能 P0）
 
-**关键约束：**
-- TDR-011：`[ObservableProperty]` 字段必须有 XAML 绑定
-- TDR-017：ChoiceCard 填充输入框，不直接发送（暂不实现 ChoiceCard，保留接口）
-- TDR-006：UI 更新必须在 Dispatcher 线程
+**关键约束验证：**
+- ✅ TDR-001：Conversation.Messages 为 ObservableCollection<ChatMessage>，ChatViewModel.Conversations 为 ObservableCollection<Conversation>
+- ✅ TDR-005：所有异步方法使用 ConfigureAwait(false)，无 .Result 或 .Wait()
+- ✅ TDR-006：CancellationToken 管理流式请求，关闭对话时取消请求
+- ✅ TDR-007：所有 [ObservableProperty] 字段都有 XAML 绑定
+- ✅ TDR-008：AgentMode computed property，每个对话独立锁定
 
 **依赖：** M1.2, M1.3
 
