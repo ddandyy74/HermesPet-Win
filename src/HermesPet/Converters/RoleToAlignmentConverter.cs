@@ -20,13 +20,13 @@ public class RoleToAlignmentConverter : IValueConverter
         {
             return role switch
             {
-                MessageRole.User => HorizontalAlignment.Right,
-                MessageRole.Assistant => HorizontalAlignment.Left,
-                MessageRole.System => HorizontalAlignment.Left,
-                _ => HorizontalAlignment.Left
+                MessageRole.User => System.Windows.HorizontalAlignment.Right,
+                MessageRole.Assistant => System.Windows.HorizontalAlignment.Left,
+                MessageRole.System => System.Windows.HorizontalAlignment.Left,
+                _ => System.Windows.HorizontalAlignment.Left
             };
         }
-        return HorizontalAlignment.Left;
+        return System.Windows.HorizontalAlignment.Left;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

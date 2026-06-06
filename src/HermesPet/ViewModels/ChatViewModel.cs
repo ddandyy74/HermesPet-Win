@@ -462,4 +462,57 @@ public partial class ChatViewModel : ObservableObject
     };
 
     #endregion
+
+    #region Persistence（持久化）
+
+    /// <summary>
+    /// 从文件加载对话历史
+    /// </summary>
+    public async Task LoadConversationsAsync()
+    {
+        try
+        {
+            var conversations = await StorageService.Instance.LoadConversationsAsync().ConfigureAwait(false);
+
+            // 切换到 UI 线程更新集合
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Conversations.Clear();
+                foreach (var conv in conversations)
+                {
+                    Conversations.Add(conv);
+                }
+
+                // 如果有对话，激活第一个
+                if (Conversations.Count > 0)
+                {
+                    ActiveConversationID = Conversations[0].Id;
+                    OnPropertyChanged(nameof(Messages));
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"加载对话历史失败: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// 保存对话历史到文件
+    /// </summary>
+    public async Task SaveConversationsAsync()
+    {
+        try
+        {
+            await StorageService.Instance.SaveConversationsAsync(
+                Conversations.ToList()
+            ).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ChatViewModel] SaveConversations 失败: {ex.Message}");
+        }
+    }
+
+    #endregion
 }

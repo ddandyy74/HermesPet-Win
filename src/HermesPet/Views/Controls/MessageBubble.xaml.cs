@@ -18,7 +18,7 @@ namespace HermesPet.Views.Controls;
 /// - 流式加载动画
 /// - 时间戳格式化
 /// </summary>
-public partial class MessageBubble : UserControl, INotifyPropertyChanged
+public partial class MessageBubble : System.Windows.Controls.UserControl, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -117,23 +117,25 @@
 
 ---
 
-### M1.5 存储服务 + 系统托盘（Day 13-15）
+### M1.5 存储服务 + 系统托盘（Day 13-15）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `Services/StorageService.cs` — JSON 文件读写（Conversations, Settings）
-- [ ] 系统托盘图标（`NotifyIcon`）— 右键菜单：显示/隐藏、退出
-- [ ] 应用启动时自动加载对话历史
-- [ ] 应用关闭时自动保存对话
+- [x] `Services/StorageService.cs` — JSON 文件读写（Conversations, Settings）
+- [x] 系统托盘图标（`NotifyIcon`）— 右键菜单：显示/隐藏、退出
+- [x] 应用启动时自动加载对话历史
+- [x] 应用关闭时自动保存对话
 
-**验收标准：**
-- 对话可持久化到 `%APPDATA%/HermesPet/conversations.json`
-- 重启应用后对话恢复
-- 托盘图标正常显示，右键菜单可用
-- 并发写入安全（`SemaphoreSlim`）
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 对话可持久化到 `%APPDATA%/HermesPet/conversations.json`
+- ✅ 重启应用后对话恢复
+- ✅ 托盘图标正常显示，右键菜单可用
+- ✅ 并发写入安全（`SemaphoreSlim`）
 
-**关键约束：**
-- TDR-004：JSON 文件存储在 `%APPDATA%/HermesPet/`
-- 并发写入必须使用锁
+**关键约束验证：**
+- ✅ TDR-004：JSON 文件存储在 `%APPDATA%/HermesPet/`
+- ✅ TDR-005：async/await + ConfigureAwait(false)
+- ✅ TDR-006：跨线程 UI 更新使用 Dispatcher
+- ✅ 并发写入使用 SemaphoreSlim
 
 **依赖：** M1.2
 
