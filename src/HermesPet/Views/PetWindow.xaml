@@ -45,21 +45,12 @@
         </Grid>
         
         <!-- 台词气泡（M2.4 实现） -->
-        <Border x:Name="SpeechBubble"
-                Background="White"
-                BorderBrush="Gray"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="8,4"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Margin="0,-40,0,0"
-                Visibility="Collapsed">
-            <TextBlock Text="{Binding CurrentSpeech}"
-                      FontSize="11"
-                      Foreground="Black"
-                      MaxWidth="150"
-                      TextWrapping="Wrap"/>
-        </Border>
+        <controls:SpeechBubbleControl 
+            Text="{Binding CurrentSpeech}"
+            BubbleVisible="{Binding ShowSpeechBubble}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,-50,0,0"
+            Width="160"/>
     </Grid>
 </Window>

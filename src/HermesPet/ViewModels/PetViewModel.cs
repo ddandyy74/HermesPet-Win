@@ -2,8 +2,11 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HermesPet.Data;
+using HermesPet.Models;
 
 namespace HermesPet.ViewModels
 {
@@ -113,6 +116,21 @@ namespace HermesPet.ViewModels
         [ObservableProperty]
         private bool _showSpeechBubble;
         
+        /// <summary>
+        /// 台词显示定时器（空闲时随机显示）
+        /// </summary>
+        private DispatcherTimer? _quoteTimer;
+        
+        /// <summary>
+        /// 台词隐藏定时器（自动隐藏气泡）
+        /// </summary>
+        private DispatcherTimer? _quoteHideTimer;
+        
+        /// <summary>
+        /// 随机数生成器
+        /// </summary>
+        private readonly Random _random = new();
+        
         // ========== 辅助属性 ==========
         
         /// <summary>
@@ -137,6 +155,9 @@ namespace HermesPet.ViewModels
             IsWalking = false;
             IsWorking = false;
             IsClickThrough = false;
+            
+            // 初始化台词定时器（空闲时每 8-15 秒显示一次）
+            InitializeQuoteTimer();
         }
         
         // ========== 命令 ==========
@@ -248,6 +269,131 @@ namespace HermesPet.ViewModels
                 _ => PetType.Fomo
             };
             OnPropertyChanged(nameof(CurrentPetName));
+        }
+        
+        // ========== 台词显示方法 ==========
+        
+        /// <summary>
+        /// 初始化台词定时器
+        /// 空闲时每 8-15 秒随机显示一次台词
+        /// </summary>
+        private void InitializeQuoteTimer()
+        {
+            _quoteTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(GetRandomInterval())
+            };
+            _quoteTimer.Tick += OnQuoteTimerTick;
+            _quoteTimer.Start();
+        }
+        
+        /// <summary>
+        /// 获取随机间隔（8-15 秒）
+        /// </summary>
+        private double GetRandomInterval()
+        {
+            return _random.Next(8, 16);
+        }
+        
+        /// <summary>
+        /// 台词定时器触发
+        /// </summary>
+        private void OnQuoteTimerTick(object? sender, EventArgs e)
+        {
+            // 只在空闲状态显示台词
+            if (CurrentState == PetState.Idle && !IsWorking && !IsWalking)
+            {
+                ShowRandomQuote();
+            }
+            
+            // 设置下一次随机间隔
+            _quoteTimer!.Interval = TimeSpan.FromSeconds(GetRandomInterval());
+        }
+        
+        /// <summary>
+        /// 显示随机台词
+        /// </summary>
+        public void ShowRandomQuote(PetQuoteContext? context = null)
+        {
+            var agentMode = CurrentPetType switch
+            {
+                PetType.Clawd => AgentMode.ClaudeCode,
+                PetType.Cloud => AgentMode.OnlineAI,
+                PetType.Fomo => AgentMode.OpenClaw,
+                PetType.Pegasus => AgentMode.Hermes,
+                PetType.Coco => AgentMode.Codex,
+                _ => AgentMode.OpenClaw
+            };
+            
+            var quote = PetQuoteRepository.GetRandomQuote(agentMode, context);
+            if (quote != null)
+            {
+                ShowQuote(quote);
+            }
+        }
+        
+        /// <summary>
+        /// 显示指定台词
+        /// </summary>
+        public void ShowQuote(PetQuote quote)
+        {
+            CurrentSpeech = quote.Text;
+            ShowSpeechBubble = true;
+            
+            // 设置自动隐藏定时器
+            _quoteHideTimer?.Stop();
+            _quoteHideTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(quote.Duration)
+            };
+            _quoteHideTimer.Tick += (s, e) =>
+            {
+                HideQuote();
+                _quoteHideTimer?.Stop();
+            };
+            _quoteHideTimer.Start();
+            
+            // 设置说话姿势
+            CurrentPose = PetPose.Talk;
+        }
+        
+        /// <summary>
+        /// 隐藏台词
+        /// </summary>
+        public void HideQuote()
+        {
+            ShowSpeechBubble = false;
+            CurrentSpeech = string.Empty;
+            
+            // 恢复空闲姿势
+            if (CurrentState == PetState.Idle)
+            {
+                CurrentPose = PetPose.Rest;
+            }
+        }
+        
+        /// <summary>
+        /// 显示情境台词（打招呼、撞墙等）
+        /// </summary>
+        public void ShowContextualQuote(PetQuoteContext context)
+        {
+            ShowRandomQuote(context);
+        }
+        
+        /// <summary>
+        /// 停止台词定时器（工作状态时暂停）
+        /// </summary>
+        public void PauseQuoteTimer()
+        {
+            _quoteTimer?.Stop();
+        }
+        
+        /// <summary>
+        /// 恢复台词定时器
+        /// </summary>
+        public void ResumeQuoteTimer()
+        {
+            _quoteTimer?.Start();
         }
     }
 }
