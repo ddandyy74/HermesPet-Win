@@ -513,8 +513,8 @@
 - ✅ 可实现像素级的完美还原
 
 **交付物：**
-- [x] `Sprites/PixelRect.cs` — 像素矩形结构（对应 Swift ClawdRect/FomoRect）
-- [x] `Sprites/PetPalette.cs` — 宠物调色板（移植自 PetPalette.swift）
+- [ ] `Sprites/PixelRect.cs` — 像素矩形结构（对应 Swift ClawdRect/FomoRect）
+- [ ] `Sprites/PetPalette.cs` — 宠物调色板（移植自 PetPalette.swift）
 - [ ] `Sprites/ClawdSprite.cs` — Clawd 宠物绘制逻辑（橘色龙虾状像素生物）
 - [ ] `Sprites/FomoSprite.cs` — Fomo 宠物绘制逻辑（白色九尾狐）
 - [ ] `Sprites/CloudSprite.cs` — Cloud 宠物绘制逻辑（云朵小精灵）
