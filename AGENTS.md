@@ -4,7 +4,8 @@
 
 Windows port of HermesPet (macOS desktop AI companion). The macOS source lives in `reference-mac/` — read it as the authoritative reference for behavior and architecture.
 
-**Status:** Planning phase. No Windows source code exists yet. `DEVELOPMENT_GUIDE.md` and `CLAUDE.md` contain the full technical spec.
+**Status:** 🔄 In Development — M1.2 Data Models completed (2026-06-07)  
+**Progress:** 11/65 tasks (17%) | See `TRACKING.md` for details
 
 ## Tech Stack
 
@@ -83,3 +84,107 @@ dotnet build -c Release
 | `Models.cs` | `reference-mac/Sources/Models.swift` |
 | `SettingsView.xaml` | `reference-mac/Sources/SettingsView.swift` |
 | `Presets.json` | `reference-mac/presets.json` |
+
+---
+
+## Development Workflow
+
+每个里程碑子阶段（如 M1.1、M1.2、M1.3...）的完整工作流：
+
+### 阶段任务工作流（6 步）
+
+```
+1. 实现阶段 ─────────────────────────────────────────────
+   └─ 按 TRACKING.md 任务列表完成所有交付物
+   └─ 参考 reference-mac/ 对应文件
+   └─ 遵循 CLAUDE.md 中的 TDR 约束
+
+2. 派子代理 QA（第一次）─────────────────────────────────
+   └─ 使用 Code Reviewer 子代理
+   └─ 验证交付物、验收标准、关键约束
+   └─ 输出 QA 报告（包含问题列表）
+
+3. 修复问题 ───────────────────────────────────────────
+   └─ 根据 QA 报告修复所有问题
+   └─ 包括"建议修复"项（非阻塞也要修）
+   └─ 验证编译通过（dotnet build）
+
+4. 派子代理 QA（第二次）─────────────────────────────────
+   └─ 验证所有修复是否正确
+   └─ 确认编译通过
+   └─ 输出最终 QA 报告
+
+5. 更新文档 ───────────────────────────────────────────
+   └─ 更新 MILESTONES.md（标记阶段完成，记录验收结果）
+   └─ 更新 TRACKING.md（任务状态、进度条、日志）
+
+6. Git 提交 ────────────────────────────────────────────
+   └─ git add -A
+   └─ git commit -m "feat/fix: <message>"
+   └─ git push
+```
+
+### 关键原则
+
+1. **QA 驱动**：任何实现完成后必须先派子代理 QA，**QA 通过后才能更新 MILESTONES.md 和 Git 提交**
+2. **建议必修**：QA 报告中的"建议修复"项（包括 TDR 约束问题）必须修复，不能跳过
+3. **文档先行**：Git 提交前必须更新 MILESTONES.md 和 TRACKING.md
+4. **单次提交**：每个阶段任务完成后只做一次 Git 提交（包含代码 + 文档更新）
+
+### 示例：M1.2 数据模型阶段
+
+```
+步骤 1: 创建 5 个模型文件（AgentMode.cs, ChatMessage.cs, Conversation.cs, APIModels.cs, CanvasBoard.cs）
+步骤 2: 派 Code Reviewer QA → 发现 TDR-018 和 TDR-010 问题
+步骤 3: 修复 TDR-018（添加 TODO 注释）+ TDR-010（添加 Images 字段）
+步骤 4: 派 Code Reviewer QA → 验证修复通过
+步骤 5: 更新 MILESTONES.md（标记完成 + TDR 验证结果）+ TRACKING.md（日志）
+步骤 6: git commit "fix: resolve TDR-018 and TDR-010 issues" + git push
+
+Git 提交历史：
+- 8c8f1f8: feat: complete M1.2 data models（初始实现）
+- b7178e3: fix: resolve TDR-018 and TDR-010 issues（修复 QA 问题）
+```
+
+### QA Prompt 模板
+
+派子代理 QA 时，使用以下模板：
+
+```
+## 任务：<阶段名称> QA 验证
+
+请验证以下交付物和验收标准：
+
+### 交付物
+<列出该阶段需要完成的文件/功能>
+
+### 验收标准
+<从 MILESTONES.md 复制验收标准>
+
+### 关键约束（来自 MILESTONES.md）
+<从 MILESTONES.md 复制 TDR 约束>
+
+### 验证步骤
+1. 读取每个文件，检查实现
+2. 验证编译通过（dotnet build）
+3. 检查 TDR 约束是否满足
+4. 检查代码质量（命名、注释、异常处理）
+
+### 输出要求
+请输出 QA 报告，包含：
+1. **交付物验证**：每个文件是否存在，内容是否正确
+2. **验收标准验证**：逐项检查是否通过
+3. **关键约束验证**：逐项检查 TDR 约束
+4. **总体评估**：✅ 通过 / ❌ 不通过
+5. **问题列表**：如有问题，列出具体问题和修复建议
+```
+
+### 常见问题处理
+
+| 情况 | 处理方式 |
+|------|---------|
+| QA 第一次发现小问题 | 修复后直接做第二次 QA |
+| QA 第一次发现重大问题 | 修复后重新完整 QA（包括所有检查项） |
+| QA 报告有"建议"项 | 视为必须修复项，不能跳过 |
+| 编译失败 | 不能派 QA，先修复编译问题 |
+| TDR 约束违反 | 必须修复，不能作为"已知问题"跳过 |
