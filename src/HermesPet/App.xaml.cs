@@ -14,14 +14,32 @@ public partial class App : System.Windows.Application
     private HotkeyService? _hotkeyService;
     private ChatViewModel? _chatViewModel;
     private ChatWindow? _mainWindow;
+    private AIClient? _aiClient;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
+        // 创建 AI 客户端
+        // 默认使用 DeepSeek（用户后续可在设置中切换）
+        var apiKey = Environment.GetEnvironmentVariable("DEEPSEEK_API_KEY") ?? "";
+        var baseURL = "https://api.deepseek.com/v1";
+        var model = "deepseek-chat";
+
+        // 如果没有配置 API Key，提示用户
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            // 使用占位客户端（用户后续配置）
+            _aiClient = new OpenAICompatibleClient(baseURL, "placeholder-key", model);
+        }
+        else
+        {
+            _aiClient = new OpenAICompatibleClient(baseURL, apiKey, model);
+        }
+
         // 创建主窗口和 ViewModel
         _mainWindow = new ChatWindow();
-        _chatViewModel = new ChatViewModel();
+        _chatViewModel = new ChatViewModel(_aiClient);
 
         // 加载对话历史
         await _chatViewModel.LoadConversationsAsync();
