@@ -41,6 +41,12 @@ public partial class IslandViewModel : ObservableObject
     private AgentMode _currentMode = AgentMode.Hermes;
 
     /// <summary>
+    /// 连接状态（从 ChatViewModel 同步，M3.3 实现）
+    /// </summary>
+    [ObservableProperty]
+    private ConnectionStatus _connectionStatus = ConnectionStatus.Disconnected;
+
+    /// <summary>
     /// 是否正在流式传输（从 ChatViewModel 同步）
     /// </summary>
     [ObservableProperty]

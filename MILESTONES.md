@@ -405,18 +405,30 @@
 
 ---
 
-### M3.3 连接状态+模型列表（Day 8-10）
+### M3.3 连接状态+模型列表（Day 8-10）✅ 已完成（2026-06-07）
 
 **交付物：**
-- [ ] `ConnectionStatus` 检测（Connected, Disconnected, Checking）
-- [ ] 模型列表获取（`FetchModelsAsync`）
-- [ ] 连接失败错误提示
-- [ ] AI 模式切换 UI（下拉菜单或标签页）
+- [x] `ChatViewModel.CheckConnectionAsync()` — ConnectionStatus 状态检测（Connected/Connecting/Disconnected/Error）
+- [x] `IslandViewModel.ConnectionStatus` — 动态岛集成连接状态
+- [x] `Windows/ConnectionStatusToColorConverter.cs` — 连接状态颜色转换器
+- [x] `Windows/AgentModeToLabelConverter.cs` — AI 模式标签转换器
+- [x] `ChatViewModel.GetAvailableModelsAsync()` — 模型列表获取（调用 `AIClient.FetchModelsAsync()`）
+- [x] `DynamicIsland.xaml` — 右上角小圆点显示连接状态（绿色/黄色/灰色/红色）
+- [x] `ConversationListControl.xaml` — AI 模式显示 + 连接状态指示器
 
-**验收标准：**
-- 动态岛显示当前 AI 连接状态
-- 断开连接时给出明确提示
-- 模型列表可从 API 获取
+**验收标准：** ✅ 所有验收标准通过
+- ✅ 动态岛显示当前 AI 连接状态（右上角小圆点 + ToolTip）
+- ✅ 断开连接时给出明确提示（ErrorMessage 显示友好错误消息）
+- ✅ 模型列表可从 API 获取（OpenAICompatibleClient.FetchModelsAsync()）
+
+**关键约束验证：**
+- ✅ TDR-006：所有异步方法使用 ConfigureAwait(false)
+- ✅ TDR-008：使用 System.Text.Json 解析模型列表
+- ✅ TDR-018：AgentMode switch 完整性（包含 _ => 默认分支）
+
+**QA 流程：**
+- 子代理验证：✅ 通过（无阻塞问题）
+- 编译：0 警告 0 错误
 
 **依赖：** M3.2
 

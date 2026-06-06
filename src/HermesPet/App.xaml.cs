@@ -170,10 +170,16 @@ public partial class App : System.Windows.Application
                 {
                     _islandViewModel.CurrentMode = _chatViewModel.AgentMode;
                 }
+                // M3.3: 同步 ChatViewModel.ConnectionStatus 到 IslandViewModel
+                else if (e.PropertyName == nameof(ChatViewModel.ConnectionStatus))
+                {
+                    _islandViewModel.ConnectionStatus = _chatViewModel.ConnectionStatus;
+                }
             };
             
             // 初始同步
             _islandViewModel.CurrentMode = _chatViewModel.AgentMode;
+            _islandViewModel.ConnectionStatus = _chatViewModel.ConnectionStatus;
             _petViewModel.SetPetByMode(_chatViewModel.AgentMode);
         }
         

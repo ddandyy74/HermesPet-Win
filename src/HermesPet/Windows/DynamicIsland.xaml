@@ -32,6 +32,9 @@
 
         <!-- 状态背景色转换器 -->
         <local:StateToBackgroundConverter x:Key="StateToBackgroundConverter"/>
+        
+        <!-- 连接状态颜色转换器（M3.3） -->
+        <local:ConnectionStatusToColorConverter x:Key="ConnectionStatusToColorConverter"/>
 
         <!-- 展开动画（紧凑态 → 扩展态） -->
         <!-- 触发：Idle → Hovering -->
@@ -110,13 +113,31 @@
         </Storyboard>
     </Window.Resources>
 
-    <!-- 主容器 -->
+     <!-- 主容器 -->
     <Grid>
         <!-- 胶囊形动态岛 -->
         <ContentControl x:Name="IslandContentControl"
                        Template="{StaticResource CapsuleTemplate}"
                        Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
             <Grid Margin="16,0">
+                <!-- M3.3: 连接状态指示器（右上角小圆点） -->
+                <Ellipse Width="8"
+                        Height="8"
+                        Fill="{Binding ConnectionStatus, Converter={StaticResource ConnectionStatusToColorConverter}}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0,8,-8,0">
+                    <!-- ConnectionStatus 连接提示 -->
+                    <Ellipse.ToolTip>
+                        <ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="连接状态: "/>
+                                <TextBlock Text="{Binding ConnectionStatus}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </Ellipse.ToolTip>
+                </Ellipse>
+                
                 <!-- Idle/Hovering 状态：显示 AI 模式图标和名称 -->
                 <StackPanel Orientation="Horizontal"
                            VerticalAlignment="Center"

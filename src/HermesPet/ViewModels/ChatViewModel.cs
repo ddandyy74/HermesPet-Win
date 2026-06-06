@@ -171,6 +171,8 @@ public partial class ChatViewModel : ObservableObject
             if (idx < 0)
             {
                 LastUsedMode = value;
+                // 切换模式时检测连接状态
+                _ = CheckConnectionAsync();
                 return;
             }
 
@@ -193,6 +195,9 @@ public partial class ChatViewModel : ObservableObject
 
             LastUsedMode = value;
             OnPropertyChanged(nameof(AgentMode));
+
+            // 切换模式时检测连接状态
+            _ = CheckConnectionAsync();
         }
     }
 
@@ -584,6 +589,177 @@ public partial class ChatViewModel : ObservableObject
             System.Diagnostics.Debug.WriteLine($"[ChatViewModel] SaveConversations 失败: {ex.Message}");
         }
     }
+
+    #endregion
+
+    #region Connection Status
+
+    /// <summary>
+    /// 获取当前 AI 客户端
+    /// </summary>
+    private AIClient? CurrentAIClient
+    {
+        get
+        {
+            try
+            {
+                // TODO: M3.4 从设置中读取 API Key 和 Base URL
+                // 临时使用默认配置
+                return AIClientFactory.CreateClient(
+                    AgentMode,
+                    baseURL: GetDefaultBaseURL(AgentMode),
+                    apiKey: GetDefaultAPIKey(AgentMode),
+                    modelName: GetDefaultModelName(AgentMode)
+                );
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ChatViewModel] 创建 AI 客户端失败: {ex.Message}");
+                return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 检测当前 AI 模式的连接状态
+    /// </summary>
+    public async Task CheckConnectionAsync()
+    {
+        // 设置为检测中状态
+        ConnectionStatus = ConnectionStatus.Connecting;
+
+        try
+        {
+            var client = CurrentAIClient;
+            if (client == null)
+            {
+                ConnectionStatus = ConnectionStatus.Error;
+                ErrorMessage = "无法创建 AI 客户端";
+                return;
+            }
+
+            // 调用健康检查（5 秒超时）
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var isHealthy = await client.CheckHealthAsync(cts.Token).ConfigureAwait(false);
+
+            ConnectionStatus = isHealthy ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+
+            if (!isHealthy)
+            {
+                ErrorMessage = $"{AgentMode.GetLabel()} 连接失败";
+            }
+            else
+            {
+                // 连接成功，清除错误消息
+                ErrorMessage = null;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            ConnectionStatus = ConnectionStatus.Error;
+            ErrorMessage = $"{AgentMode.GetLabel()} 连接超时";
+        }
+        catch (Exception ex)
+        {
+            ConnectionStatus = ConnectionStatus.Error;
+            ErrorMessage = $"连接失败: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"[ChatViewModel] CheckConnectionAsync 异常: {ex}");
+        }
+    }
+
+    /// <summary>
+    /// 获取可用模型列表
+    /// </summary>
+    public async Task<System.Collections.Generic.List<string>> GetAvailableModelsAsync()
+    {
+        try
+        {
+            var client = CurrentAIClient;
+            if (client == null)
+            {
+                return new System.Collections.Generic.List<string>();
+            }
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var models = await client.FetchModelsAsync(cts.Token).ConfigureAwait(false);
+            return models;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ChatViewModel] GetAvailableModelsAsync 失败: {ex.Message}");
+            return new System.Collections.Generic.List<string>();
+        }
+    }
+
+    /// <summary>
+    /// 获取默认 Base URL（M3.4 将从设置中读取）
+    /// </summary>
+    private static string GetDefaultBaseURL(AgentMode mode) => mode switch
+    {
+        AgentMode.Hermes => "http://localhost:8642/v1",
+        AgentMode.OnlineAI => "http://localhost:8080/v1",
+        AgentMode.OpenClaw => "http://localhost:18789/v1",
+        AgentMode.ClaudeCode => "claude-code", // CLI 模式，这是可执行文件名
+        AgentMode.Codex => "codex", // CLI 模式，这是可执行文件名
+        _ => "http://localhost:8080/v1"
+    };
+
+    /// <summary>
+    /// 获取默认 API Key（M3.4 将从设置中读取）
+    /// </summary>
+    private static string GetDefaultAPIKey(AgentMode mode)
+    {
+        // CLI 模式不需要 API Key
+        if (mode == AgentMode.ClaudeCode || mode == AgentMode.Codex)
+        {
+            return string.Empty;
+        }
+
+        // OpenClaw 从配置文件读取 token
+        if (mode == AgentMode.OpenClaw)
+        {
+            try
+            {
+                var openClawConfigPath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".openclaw",
+                    "openclaw.json"
+                );
+
+                if (System.IO.File.Exists(openClawConfigPath))
+                {
+                    var json = System.IO.File.ReadAllText(openClawConfigPath);
+                    using var doc = System.Text.Json.JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("token", out var tokenElement))
+                    {
+                        return tokenElement.GetString() ?? string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ChatViewModel] 读取 OpenClaw token 失败: {ex.Message}");
+            }
+
+            return string.Empty;
+        }
+
+        // TODO: M3.4 从设置中读取其他 API Key
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// 获取默认模型名称（M3.4 将从设置中读取）
+    /// </summary>
+    private static string GetDefaultModelName(AgentMode mode) => mode switch
+    {
+        AgentMode.Hermes => "default",
+        AgentMode.OnlineAI => "opencode-search",
+        AgentMode.OpenClaw => "default",
+        AgentMode.ClaudeCode => "claude-3-5-sonnet-20241022",
+        AgentMode.Codex => "gpt-4o",
+        _ => "default"
+    };
 
     #endregion
 }

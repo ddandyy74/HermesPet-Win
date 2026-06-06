@@ -4,10 +4,40 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:HermesPet.Models"
+             xmlns:windows="clr-namespace:HermesPet.Windows"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="250">
 
     <UserControl.Resources>
+        <!-- AI 模式切换按钮样式 -->
+        <Style x:Key="ModeButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}"
+                               Padding="{TemplateBinding Padding}"
+                               CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E8E8E8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <!-- 会话项样式 -->
         <Style x:Key="ConversationItemStyle" TargetType="ListBoxItem">
             <Setter Property="Template">
@@ -79,10 +109,15 @@
 
         <!-- BoolToVisibilityConverter -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <!-- M3.3: 转换器 -->
+        <windows:ConnectionStatusToColorConverter x:Key="ConnectionStatusToColorConverter"/>
+        <windows:AgentModeToLabelConverter x:Key="AgentModeToLabelConverter"/>
     </UserControl.Resources>
 
     <Grid Background="#FAFAFA">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -125,6 +160,35 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
+            </Grid>
+        </Border>
+
+        <!-- M3.3: AI 模式切换区域 -->
+        <Border Grid.Row="1"
+               Background="#FFFFFF"
+               BorderBrush="#E0E0E0"
+               BorderThickness="0,0,0,1"
+               Padding="16,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 连接状态指示器 -->
+                <Ellipse Grid.Column="0"
+                        Width="8" Height="8"
+                        Fill="{Binding ConnectionStatus, Converter={StaticResource ConnectionStatusToColorConverter}}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"
+                        ToolTip="{Binding ConnectionStatus}"/>
+
+                <!-- AI 模式显示 -->
+                <TextBlock Grid.Column="1"
+                          Text="{Binding AgentMode, Converter={StaticResource AgentModeToLabelConverter}}"
+                          FontSize="13"
+                          Foreground="#666666"
+                          VerticalAlignment="Center"/>
             </Grid>
         </Border>
 
