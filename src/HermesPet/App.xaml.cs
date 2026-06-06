@@ -82,6 +82,7 @@ public partial class App : System.Windows.Application
         _hotkeyService = new HotkeyService();
         _hotkeyService.ToggleWindowHotkeyPressed += OnToggleWindowHotkeyPressed;
         _hotkeyService.NewConversationHotkeyPressed += OnNewConversationHotkeyPressed;
+        _hotkeyService.VoiceInputHotkeyPressed += OnVoiceInputHotkeyPressed;
         
         // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
         _mainWindow.Show();
@@ -135,6 +136,25 @@ public partial class App : System.Windows.Application
     private void OnNewConversationHotkeyPressed(object? sender, System.EventArgs e)
     {
         _chatViewModel?.NewConversationCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// 语音输入热键处理（Ctrl+Shift+V）。
+    /// 切换录音状态：如果正在录音则停止，否则开始录音。
+    /// </summary>
+    private void OnVoiceInputHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        if (_chatViewModel == null)
+            return;
+
+        if (_chatViewModel.IsRecording)
+        {
+            _chatViewModel.StopVoiceInputCommand.Execute(null);
+        }
+        else
+        {
+            _chatViewModel.StartVoiceInputCommand.Execute(null);
+        }
     }
 
     #endregion

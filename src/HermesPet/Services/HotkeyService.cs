@@ -29,10 +29,12 @@ namespace HermesPet.Services
         // 虚拟键码
         private const int VK_H = 0x48;
         private const int VK_J = 0x4A;
+        private const int VK_V = 0x56;
 
         // 热键 ID
         private const int HOTKEY_TOGGLE_WINDOW = 9001;
         private const int HOTKEY_NEW_CONVERSATION = 9002;
+        private const int HOTKEY_VOICE_INPUT = 9003;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
@@ -53,6 +55,11 @@ namespace HermesPet.Services
         /// 新建对话热键触发事件。
         /// </summary>
         public event EventHandler? NewConversationHotkeyPressed;
+
+        /// <summary>
+        /// 语音输入热键触发事件（切换录音状态）。
+        /// </summary>
+        public event EventHandler? VoiceInputHotkeyPressed;
 
         #endregion
 
@@ -90,6 +97,13 @@ namespace HermesPet.Services
                 failures.Add($"Ctrl+Shift+J（错误码: {error}）");
             }
 
+            // Ctrl+Shift+V → 切换语音输入
+            if (!RegisterHotKey(_windowHandle, HOTKEY_VOICE_INPUT, MOD_CONTROL | MOD_SHIFT, VK_V))
+            {
+                var error = Marshal.GetLastWin32Error();
+                failures.Add($"Ctrl+Shift+V（错误码: {error}）");
+            }
+
             _isRegistered = true;
             return failures.ToArray();
         }
@@ -104,6 +118,7 @@ namespace HermesPet.Services
 
             UnregisterHotKey(_windowHandle, HOTKEY_TOGGLE_WINDOW);
             UnregisterHotKey(_windowHandle, HOTKEY_NEW_CONVERSATION);
+            UnregisterHotKey(_windowHandle, HOTKEY_VOICE_INPUT);
             _isRegistered = false;
         }
 
@@ -128,6 +143,10 @@ namespace HermesPet.Services
 
                     case HOTKEY_NEW_CONVERSATION:
                         NewConversationHotkeyPressed?.Invoke(this, EventArgs.Empty);
+                        return true;
+
+                    case HOTKEY_VOICE_INPUT:
+                        VoiceInputHotkeyPressed?.Invoke(this, EventArgs.Empty);
                         return true;
                 }
             }

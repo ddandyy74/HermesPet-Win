@@ -157,12 +157,48 @@
                    Padding="12">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- 语音输入按钮 -->
+                    <Button Grid.Column="0"
+                           Width="36"
+                           Height="36"
+                           Margin="0,0,8,0"
+                           VerticalAlignment="Center"
+                           Command="{Binding StartVoiceInputCommand}"
+                           ToolTip="按住说话 (Ctrl+Shift+V)">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   BorderBrush="#E0E0E0"
+                                                   BorderThickness="1"
+                                                   CornerRadius="4">
+                                                <TextBlock Text="🎤"
+                                                          FontSize="16"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                        <Setter Property="Background" Value="#FF4444"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
                     <!-- 输入框 -->
-                    <TextBox Grid.Column="0"
+                    <TextBox Grid.Column="1"
                             Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
                             FontSize="14"
                             Padding="8"
@@ -179,8 +215,38 @@
                         </TextBox.InputBindings>
                     </TextBox>
 
+                    <!-- 音量可视化（录音时显示） -->
+                    <Border Grid.Column="1"
+                           Background="#CC000000"
+                           CornerRadius="4"
+                           Padding="8"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Center"
+                           Height="40">
+                        <Border.Visibility>
+                            <Binding Path="IsRecording" Converter="{StaticResource BoolToVisibilityConverter}"/>
+                        </Border.Visibility>
+                        <Grid>
+                            <!-- 音量进度条 -->
+                            <ProgressBar Value="{Binding VolumeLevel}"
+                                       Minimum="0"
+                                       Maximum="1"
+                                       Height="8"
+                                       VerticalAlignment="Center"
+                                       Foreground="#4CAF50"
+                                       Background="#404040"
+                                       BorderThickness="0"/>
+                            <TextBlock Text="正在录音..."
+                                      Foreground="White"
+                                      FontSize="12"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Bottom"
+                                      Margin="0,0,0,2"/>
+                        </Grid>
+                    </Border>
+
                     <!-- 发送按钮 -->
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="2"
                            Content="发送"
                            Command="{Binding SendMessageCommand}"
                            Style="{StaticResource SendButtonStyle}"

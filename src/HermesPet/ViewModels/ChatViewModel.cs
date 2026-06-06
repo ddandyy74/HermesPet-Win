@@ -118,6 +118,18 @@ public partial class ChatViewModel : ObservableObject
     private AgentMode _lastUsedMode = AgentMode.OnlineAI;
 
     /// <summary>
+    /// 是否正在录音（语音输入）
+    /// </summary>
+    [ObservableProperty]
+    private bool _isRecording = false;
+
+    /// <summary>
+    /// 当前音量级别（0~1，用于可视化）
+    /// </summary>
+    [ObservableProperty]
+    private float _volumeLevel = 0;
+
+    /// <summary>
     /// 是否正在加载（computed property）
     /// </summary>
     public bool IsLoading
@@ -222,6 +234,15 @@ public partial class ChatViewModel : ObservableObject
     public ChatViewModel(AIClient? aiClient = null)
     {
         _aiClient = aiClient;
+
+        // 连接语音服务事件
+        var voiceService = VoiceService.Instance;
+        voiceService.VolumeLevelChanged += OnVolumeLevelChanged;
+        voiceService.RecordingStarted += OnRecordingStarted;
+        voiceService.RecordingStopped += OnRecordingStopped;
+        voiceService.RecordingCancelled += OnRecordingCancelled;
+        voiceService.RecognitionError += OnRecognitionError;
+        voiceService.PartialTranscript += OnPartialTranscript;
 
         // 创建初始对话
         if (Conversations.Count == 0)
@@ -422,9 +443,124 @@ public partial class ChatViewModel : ObservableObject
         SwitchConversation(id);
     }
 
+    /// <summary>
+    /// 开始语音输入（push-to-talk 按下时调用）
+    /// </summary>
+    [RelayCommand]
+    private void StartVoiceInput()
+    {
+        if (!IsRecording)
+        {
+            VoiceService.Instance.StartListening();
+        }
+    }
+
+    /// <summary>
+    /// 停止语音输入（push-to-talk 松开时调用）
+    /// </summary>
+    [RelayCommand]
+    private void StopVoiceInput()
+    {
+        if (IsRecording)
+        {
+            VoiceService.Instance.StopListening();
+        }
+    }
+
+    /// <summary>
+    /// 取消语音输入
+    /// </summary>
+    [RelayCommand]
+    private void CancelVoiceInput()
+    {
+        if (IsRecording)
+        {
+            VoiceService.Instance.CancelListening();
+        }
+    }
+
     #endregion
 
     #region Private Methods
+
+    /// <summary>
+    /// 音量级别变化事件处理
+    /// </summary>
+    private void OnVolumeLevelChanged(object? sender, float level)
+    {
+        // 在 UI 线程更新（TDR-006）
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            VolumeLevel = level;
+        });
+    }
+
+    /// <summary>
+    /// 录音开始事件处理
+    /// </summary>
+    private void OnRecordingStarted(object? sender, EventArgs e)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsRecording = true;
+            VolumeLevel = 0;
+        });
+    }
+
+    /// <summary>
+    /// 录音停止事件处理
+    /// </summary>
+    private void OnRecordingStopped(object? sender, string finalText)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsRecording = false;
+            VolumeLevel = 0;
+            
+            // 将识别文本填入输入框
+            if (!string.IsNullOrWhiteSpace(finalText))
+            {
+                InputText = finalText;
+            }
+        });
+    }
+
+    /// <summary>
+    /// 录音取消事件处理
+    /// </summary>
+    private void OnRecordingCancelled(object? sender, EventArgs e)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsRecording = false;
+            VolumeLevel = 0;
+        });
+    }
+
+    /// <summary>
+    /// 识别错误事件处理
+    /// </summary>
+    private void OnRecognitionError(object? sender, string errorMessage)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsRecording = false;
+            VolumeLevel = 0;
+            ErrorMessage = errorMessage;
+        });
+    }
+
+    /// <summary>
+    /// 部分识别结果事件处理
+    /// </summary>
+    private void OnPartialTranscript(object? sender, string partialText)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            // 实时显示部分识别结果（可选）
+            // InputText = partialText;
+        });
+    }
 
     /// <summary>
     /// 切换到指定对话

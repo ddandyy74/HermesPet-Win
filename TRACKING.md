@@ -15,11 +15,8 @@
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 69/83 任务
-█████████████████████████████████████████████████████████████████████░░░ 83%
-```
-总进度: 57/83 任务
-█████████████████████████████████████████████████████████████████░░░ 69%
+总进度: 72/83 任务
+████████████████████████████████████████████████████████████████████████░░ 87%
 ```
 
 ---
@@ -266,12 +263,22 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M4.1.1 | `Services/VoiceService.cs` | VoiceInputController.swift | ⬜ | NAudio 录音 |
-| M4.1.2 | 按住说话 UI | VoiceInputController.swift | ⬜ | Ctrl+Shift+V 触发 |
-| M4.1.3 | 音量可视化 | VoiceTranscriptOverlay.swift | ⬜ | |
-| M4.1.4 | 语音识别集成 | VoiceInputController.swift | ⬜ | Azure Speech SDK / Whisper.NET |
+| M4.1.1 | `Services/VoiceService.cs` | VoiceInputController.swift | ✅ | NAudio 录音（16kHz/16bit/Mono） |
+| M4.1.2 | 按住说话 UI | VoiceInputController.swift | ✅ | Ctrl+Shift+V 触发（切换模式） |
+| M4.1.3 | 音量可视化 | VoiceTranscriptOverlay.swift | ✅ | RMS 归一化 + ProgressBar |
+| M4.1.4 | 语音识别集成 | VoiceInputController.swift | ⬜ | Azure Speech SDK / Whisper.NET（待实现） |
 
 **依赖：** M1, M2, M4.0
+
+**验收结果：** ✅ 通过（有条件：语音识别待实现）
+
+**关键实现：**
+- ✅ NAudio 录音功能完整
+- ✅ 音量计算正确（RMS 归一化）
+- ✅ 热键注册和事件处理完整
+- ✅ UI 绑定和状态管理正确
+- ✅ TDR-006 完美遵循（Dispatcher.InvokeAsync）
+- ⚠️ 语音识别待实现（占位符状态）
 
 ---
 
