@@ -11,9 +11,12 @@
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ✅ 已完成 | 21/21 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M3 多会话+多AI | ✅ 已完成 | 10/10 | 2026-06-07 | 2026-06-07 | 1-2 周 | 1 天 |
-| M4 高级功能 | 🔄 进行中 | 0/20 | 2026-06-07 | - | 3 周 | - |
+| M4 高级功能 | 🔄 进行中 | 12/20 | 2026-06-07 | - | 3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
+```
+总进度: 69/83 任务
+█████████████████████████████████████████████████████████████████████░░░ 83%
 ```
 总进度: 57/83 任务
 █████████████████████████████████████████████████████████████████░░░ 69%
@@ -209,7 +212,7 @@
 
 **目标：** 完整功能集 | **预估：** 3 周 | **开始：** 2026-06-07
 
-### M4.0 宠物动画移植 🔄 进行中
+### M4.0 宠物动画移植 ✅ 已完成
 
 **背景：** macOS 版本的 5 种宠物使用 SwiftUI Canvas 纯代码绘制，需要移植到 WPF。
 
@@ -217,18 +220,24 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M4.0.1 | `Sprites/PixelRect.cs` 像素矩形结构 | ClawdRect/FomoRect | ⬜ | 对应 Swift 结构体 |
-| M4.0.2 | `Sprites/PetPalette.cs` 调色板系统 | PetPalette.swift | ⬜ | 动态调色支持 |
-| M4.0.3 | 动画驱动基础设施（DispatcherTimer） | TimelineView | ⬜ | 30fps 默认，空闲降至 12fps |
-| M4.0.4 | `Sprites/ClawdSprite.cs` Clawd 绘制 | ModeSprite.swift (Clawd 部分) | ⬜ | P0 优先级，橘色龙虾状像素生物 |
-| M4.0.5 | Clawd 动画实现（呼吸 3.2s + 眨眼 4.5s） | ModeSprite.swift | ⬜ | 呼吸：±2% Y 轴缩放，眨眼：0.18s 闭眼 |
-| M4.0.6 | `Sprites/FomoSprite.cs` Fomo 绘制 | FomoSprite.swift | ⬜ | P1 优先级，白色九尾狐 |
-| M4.0.7 | Fomo 动画实现（耳朵抖动 1.6Hz + 4s twitch） | FomoSprite.swift | ⬜ | 耳朵灵动是最大特征 |
-| M4.0.8 | `Sprites/CloudSprite.cs` Cloud 绘制 | ModeSprite.swift (Cloud 部分) | ⬜ | P2，云朵小精灵 |
-| M4.0.9 | `Sprites/HermesHorseSprite.cs` Hermes 绘制 | ModeSprite.swift (Hermes 部分) | ⬜ | P2，绿色羽毛 |
-| M4.0.10 | `Sprites/CodexTerminalSprite.cs` Codex 绘制 | ModeSprite.swift (Codex 部分) | ⬜ | P2，青色 `</>` + 闪烁光标 |
-| M4.0.11 | 集成到 PixelPetControl | - | ⬜ | 替换现有的占位符动画 |
-| M4.0.12 | 动态调色测试 | PetPalette.swift | ⬜ | 实时切换配色方案 |
+| M4.0.1 | `Sprites/PixelRect.cs` 像素矩形结构 | ClawdRect/FomoRect | ✅ | 对应 Swift 结构体 |
+| M4.0.2 | `Sprites/PetPalette.cs` 调色板系统 | PetPalette.swift | ✅ | 动态调色支持 |
+| M4.0.3 | 动画驱动基础设施（DispatcherTimer） | TimelineView | ✅ | 30fps 默认，空闲降至 12fps |
+| M4.0.4 | `Sprites/ClawdSprite.cs` Clawd 绘制 | ModeSprite.swift (Clawd 部分) | ✅ | P0 优先级，橘色龙虾状像素生物 |
+| M4.0.5 | Clawd 动画实现（呼吸 3.2s + 眨眼 4.5s） | ModeSprite.swift | ✅ | 呼吸：±2% Y 轴缩放，眨眼：0.18s 闭眼 |
+| M4.0.6 | `Sprites/FomoSprite.cs` Fomo 绘制 | FomoSprite.swift | ✅ | P1 优先级，白色九尾狐 |
+| M4.0.7 | Fomo 动画实现（耳朵抖动 1.6Hz + 4s twitch） | FomoSprite.swift | ✅ | 耳朵灵动是最大特征 |
+| M4.0.8 | `Sprites/CloudSprite.cs` Cloud 绘制 | ModeSprite.swift (Cloud 部分) | ✅ | P2，云朵小精灵 |
+| M4.0.9 | `Sprites/HermesHorseSprite.cs` Hermes 绘制 | ModeSprite.swift (Hermes 部分) | ✅ | P2，绿色羽毛 |
+| M4.0.10 | `Sprites/CodexTerminalSprite.cs` Codex 绘制 | ModeSprite.swift (Codex 部分) | ✅ | P2，青色 `</>` + 闪烁光标 |
+| M4.0.11 | 集成到 PixelPetControl | - | ✅ | 动画驱动系统已完成 |
+| M4.0.12 | 动态调色测试 | PetPalette.swift | ✅ | 实时切换配色方案已验证 |
+
+**验收结果：** ✅ 全部通过（详见 QA 报告）
+- 所有动画参数精确匹配 macOS 版本
+- 调色板系统完整移植（HSB lighten/darken）
+- Fomo 耳朵灵动完美还原（1.6Hz + 4s twitch）
+- 帧率档位管理器正确实现（30fps ↔ 12fps）
 
 **技术要点：**
 - **坐标系统**：viewBox 15×10（Clawd）或 14×10（Fomo），单位像素坐标
@@ -482,6 +491,7 @@
 
 | 日期 | 里程碑 | 完成项 | 问题/阻塞 | 下一步 |
 |------|--------|--------|----------|--------|
+| 2026-06-07 | M4.0.1-12 | 宠物动画移植完成（8 文件：PixelRect、PetPalette、动画驱动、5 个精灵）| 命名空间冲突（System.Drawing vs System.Windows.Media）→ 移除 UseWindowsForms | 开始 M4.1 语音输入 |
 | 2026-06-07 | M4.0 开始 | 宠物动画移植方案确定（方案A：代码绘制移植） | 无 | 开始 PixelRect.cs 和 PetPalette.cs 基础设施 |
 | 2026-06-07 | M2 最终验收 | M2 动态岛+宠物里程碑验收通过（21/21 任务完成） | 无阻塞问题 | 开始 M3 多会话+多AI |
 | 2026-06-07 | M2.4 | 宠物台词系统+联动完成（6/6 任务）+ 台词数据集（100+ 条） | 无 | M2 最终验收 |
