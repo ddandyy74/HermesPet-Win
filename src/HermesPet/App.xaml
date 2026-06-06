@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:HermesPet"
              xmlns:windows="clr-namespace:HermesPet.Windows"
-             StartupUri="MainWindow.xaml">
+             ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <!-- 状态转换器 -->
         <windows:StateToBackgroundConverter x:Key="StateToBackgroundConverter"/>
