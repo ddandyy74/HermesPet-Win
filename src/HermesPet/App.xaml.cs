@@ -30,6 +30,12 @@ public partial class App : System.Windows.Application
     private QuickAskViewModel? _quickAskViewModel;
     private QuickAskWindow? _quickAskWindow;
 
+    // 知识图谱窗口相关
+    private KnowledgeMapWindow? _knowledgeMapWindow;
+
+    // PinCard 窗口集合
+    private readonly System.Collections.Generic.List<PinCardWindow> _pinCardWindows = new();
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -89,10 +95,18 @@ public partial class App : System.Windows.Application
         _hotkeyService.NewConversationHotkeyPressed += OnNewConversationHotkeyPressed;
         _hotkeyService.VoiceInputHotkeyPressed += OnVoiceInputHotkeyPressed;
         _hotkeyService.QuickAskHotkeyPressed += OnQuickAskHotkeyPressed;
+        _hotkeyService.PinCardHotkeyPressed += OnPinCardHotkeyPressed;
+        _hotkeyService.KnowledgeMapHotkeyPressed += OnKnowledgeMapHotkeyPressed;
         
         // 初始化快速询问窗口
         _quickAskViewModel = new QuickAskViewModel(_aiClient);
         _quickAskWindow = new QuickAskWindow(_quickAskViewModel);
+        
+        // 初始化知识图谱窗口
+        _knowledgeMapWindow = new KnowledgeMapWindow();
+        
+        // 加载已存在的 PinCards
+        LoadPinCards();
         
         // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
         _mainWindow.Show();
@@ -186,6 +200,39 @@ public partial class App : System.Windows.Application
             _quickAskViewModel.Reset();
             _quickAskViewModel.CurrentMode = _chatViewModel?.AgentMode ?? AgentMode.Hermes;
             _quickAskWindow.Show();
+        }
+    }
+
+    /// <summary>
+    /// 置顶卡片热键处理（Ctrl+Shift+P）。
+    /// 显示已置顶的卡片。
+    /// </summary>
+    private void OnPinCardHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        // TODO: 显示 PinCard 管理窗口或创建新的 PinCard
+        // 当前简化实现：显示提示
+        if (_chatViewModel != null)
+        {
+            _chatViewModel.ErrorMessage = "置顶卡片功能：在聊天回答中点击 📌 按钮即可置顶";
+        }
+    }
+
+    /// <summary>
+    /// 知识图谱热键处理（Ctrl+Shift+G）。
+    /// 显示知识图谱窗口。
+    /// </summary>
+    private void OnKnowledgeMapHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        if (_knowledgeMapWindow == null)
+            return;
+
+        if (_knowledgeMapWindow.IsVisible)
+        {
+            _knowledgeMapWindow.Hide();
+        }
+        else
+        {
+            _knowledgeMapWindow.Show();
         }
     }
 
@@ -287,6 +334,56 @@ public partial class App : System.Windows.Application
         
         // 初始避让
         _petWindow.AvoidOverlap(_mainWindow);
+    }
+    
+    #endregion
+    
+    #region PinCard 管理
+    
+    /// <summary>
+    /// 加载已存在的 PinCards
+    /// </summary>
+    private void LoadPinCards()
+    {
+        var pins = PinStore.Instance.Pins;
+        if (pins.Count == 0)
+            return;
+
+        // 计算屏幕右上角的堆叠位置
+        var screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+        var screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+        
+        // 参考 macOS: 右侧 16pt 边距，顶部 16pt 边距，卡片间距 10pt
+        const double rightMargin = 16;
+        const double topMargin = 16;
+        const double cardSpacing = 10;
+        const double cardWidth = 280;
+        const double cardHeight = 124;
+
+        for (int i = 0; i < pins.Count; i++)
+        {
+            var pin = pins[i];
+            var window = new PinCardWindow(pin);
+
+            // 计算位置
+            double x, y;
+            if (pin.HasCustomPosition)
+            {
+                // 使用自定义位置
+                x = pin.CustomX!.Value;
+                y = pin.CustomY!.Value;
+            }
+            else
+            {
+                // 堆叠布局：右上角向下排列
+                x = screenWidth - cardWidth - rightMargin;
+                y = topMargin + (cardHeight + cardSpacing) * i;
+            }
+
+            window.SetPosition(x, y);
+            window.Show();
+            _pinCardWindows.Add(window);
+        }
     }
     
     #endregion

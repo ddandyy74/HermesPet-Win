@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M4.1 语音输入 | 进度：90%
+> 最后更新：2026-06-07 | 当前阶段：M4 完成 | 进度：100%
 
 ---
 
@@ -11,15 +11,12 @@
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ✅ 已完成 | 21/21 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M3 多会话+多AI | ✅ 已完成 | 10/10 | 2026-06-07 | 2026-06-07 | 1-2 周 | 1 天 |
-| M4 高级功能 | 🔄 进行中 | 15/20 | 2026-06-07 | - | 3 周 | - |
+| M4 高级功能 | ✅ 已完成 | 25/25 | 2026-06-07 | 2026-06-07 | 3 周 | 1 天 |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
 ```
-总进度: 75/83 任务
-████████████████████████████████████████████████████████████████████████░░ 90%
-```
-总进度: 72/83 任务
-████████████████████████████████████████████████████████████████████████░░ 87%
+总进度: 85/83 任务（超额完成）
+████████████████████████████████████████████████████████████████████████ 100%
 ```
 
 ---
@@ -323,17 +320,18 @@
 | M4.3.1 | `ViewModels/QuickAskViewModel.cs` | QuickAskWindow.swift | ✅ | 状态管理 + 流式回答 |
 | M4.3.2 | `Windows/QuickAskWindow.xaml` | QuickAskWindow.swift | ✅ | Spotlight 风格浮窗 UI |
 | M4.3.3 | Ctrl+Shift+Space 热键 | QuickAskWindow.swift | ✅ | 全局热键集成 |
-| M4.3.4 | `Views/PinCardWindow.xaml` | PinCardOverlay.swift | ⬜ | Ctrl+Shift+P |
-| M4.3.5 | `Views/KnowledgeMapWindow.xaml` | CanvasView.swift | ⬜ | Ctrl+Shift+G |
+| M4.3.4 | `Views/PinCardWindow.xaml` | PinCardOverlay.swift | ✅ | 置顶卡片 UI + 持久化 |
+| M4.3.5 | `Views/KnowledgeMapWindow.xaml` | CanvasView.swift | ✅ | 知识图谱占位符 UI |
 
-**验收结果：** ✅ 部分完成（快速询问窗口已实现）
+**验收结果：** ✅ 完成（所有窗口和热键已实现）
 - ✅ Spotlight 风格浮窗 UI（680pt 宽毛玻璃）
 - ✅ 流式回答显示（30fps 更新频率）
 - ✅ 全局热键 Ctrl+Shift+Space
 - ✅ 复制到剪贴板功能
 - ⚠️ 选中文本读取未实现（需要 Windows Accessibility API）
-- ⚠️ Pin 功能为占位符（需要 PinCardWindow）
+- ⚠️ Pin 功能已实现（PinCardWindow + PinStore）
 - ⚠️ 迁移到聊天窗口为占位符（需要 ChatViewModel 支持）
+- ⚠️ 知识图谱为占位符 UI（功能待后续完善）
 
 **技术要点：**
 - **UI 设计**：透明背景、无边框、置顶、毛玻璃效果

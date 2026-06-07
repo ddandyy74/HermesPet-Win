@@ -31,12 +31,16 @@ namespace HermesPet.Services
         private const int VK_J = 0x4A;
         private const int VK_V = 0x56;
         private const int VK_SPACE = 0x20;
+        private const int VK_P = 0x50;
+        private const int VK_G = 0x47;
 
         // 热键 ID
         private const int HOTKEY_TOGGLE_WINDOW = 9001;
         private const int HOTKEY_NEW_CONVERSATION = 9002;
         private const int HOTKEY_VOICE_INPUT = 9003;
         private const int HOTKEY_QUICK_ASK = 9004;
+        private const int HOTKEY_PIN_CARD = 9005;
+        private const int HOTKEY_KNOWLEDGE_MAP = 9006;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
@@ -67,6 +71,16 @@ namespace HermesPet.Services
         /// 快速询问热键触发事件（Ctrl+Shift+Space）。
         /// </summary>
         public event EventHandler? QuickAskHotkeyPressed;
+
+        /// <summary>
+        /// 置顶卡片热键触发事件（Ctrl+Shift+P）。
+        /// </summary>
+        public event EventHandler? PinCardHotkeyPressed;
+
+        /// <summary>
+        /// 知识图谱热键触发事件（Ctrl+Shift+G）。
+        /// </summary>
+        public event EventHandler? KnowledgeMapHotkeyPressed;
 
         #endregion
 
@@ -118,6 +132,20 @@ namespace HermesPet.Services
                 failures.Add($"Ctrl+Shift+Space（错误码: {error}）");
             }
 
+            // Ctrl+Shift+P → 置顶卡片
+            if (!RegisterHotKey(_windowHandle, HOTKEY_PIN_CARD, MOD_CONTROL | MOD_SHIFT, VK_P))
+            {
+                var error = Marshal.GetLastWin32Error();
+                failures.Add($"Ctrl+Shift+P（错误码: {error}）");
+            }
+
+            // Ctrl+Shift+G → 知识图谱
+            if (!RegisterHotKey(_windowHandle, HOTKEY_KNOWLEDGE_MAP, MOD_CONTROL | MOD_SHIFT, VK_G))
+            {
+                var error = Marshal.GetLastWin32Error();
+                failures.Add($"Ctrl+Shift+G（错误码: {error}）");
+            }
+
             _isRegistered = true;
             return failures.ToArray();
         }
@@ -134,6 +162,8 @@ namespace HermesPet.Services
             UnregisterHotKey(_windowHandle, HOTKEY_NEW_CONVERSATION);
             UnregisterHotKey(_windowHandle, HOTKEY_VOICE_INPUT);
             UnregisterHotKey(_windowHandle, HOTKEY_QUICK_ASK);
+            UnregisterHotKey(_windowHandle, HOTKEY_PIN_CARD);
+            UnregisterHotKey(_windowHandle, HOTKEY_KNOWLEDGE_MAP);
             _isRegistered = false;
         }
 
@@ -166,6 +196,14 @@ namespace HermesPet.Services
 
                     case HOTKEY_QUICK_ASK:
                         QuickAskHotkeyPressed?.Invoke(this, EventArgs.Empty);
+                        return true;
+
+                    case HOTKEY_PIN_CARD:
+                        PinCardHotkeyPressed?.Invoke(this, EventArgs.Empty);
+                        return true;
+
+                    case HOTKEY_KNOWLEDGE_MAP:
+                        KnowledgeMapHotkeyPressed?.Invoke(this, EventArgs.Empty);
                         return true;
                 }
             }
