@@ -185,7 +185,7 @@ public partial class App : System.Windows.Application
     /// 快速询问热键处理（Ctrl+Shift+Space）。
     /// 切换快速询问窗口显示/隐藏。
     /// </summary>
-    private void OnQuickAskHotkeyPressed(object? sender, System.EventArgs e)
+    private async void OnQuickAskHotkeyPressed(object? sender, System.EventArgs e)
     {
         if (_quickAskWindow == null || _quickAskViewModel == null)
             return;
@@ -196,9 +196,14 @@ public partial class App : System.Windows.Application
         }
         else
         {
-            // 重置状态并显示
+            // 重置状态
             _quickAskViewModel.Reset();
             _quickAskViewModel.CurrentMode = _chatViewModel?.AgentMode ?? AgentMode.Hermes;
+            
+            // 读取选中文本（在窗口显示前）
+            await _quickAskViewModel.ReadSelectedTextAsync();
+            
+            // 显示窗口
             _quickAskWindow.Show();
         }
     }

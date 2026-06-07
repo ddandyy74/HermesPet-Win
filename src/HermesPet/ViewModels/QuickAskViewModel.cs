@@ -19,6 +19,7 @@ namespace HermesPet.ViewModels;
 public partial class QuickAskViewModel : ObservableObject
 {
     private readonly AIClient _aiClient;
+    private readonly SelectedTextReader _selectedTextReader;
     private Task? _streamTask;
     private CancellationTokenSource? _cancellationTokenSource;
 
@@ -28,6 +29,7 @@ public partial class QuickAskViewModel : ObservableObject
     public QuickAskViewModel(AIClient aiClient)
     {
         _aiClient = aiClient;
+        _selectedTextReader = new SelectedTextReader();
     }
 
     /// <summary>
@@ -245,5 +247,25 @@ public partial class QuickAskViewModel : ObservableObject
         IsExpanded = false;
         SelectedContext = string.Empty;
         SourceAppName = string.Empty;
+    }
+
+    /// <summary>
+    /// 读取选中文本作为上下文（在窗口打开前调用）
+    /// </summary>
+    public async Task ReadSelectedTextAsync()
+    {
+        try
+        {
+            var selectedText = await _selectedTextReader.ReadSelectedTextAsync();
+
+            if (!string.IsNullOrWhiteSpace(selectedText))
+            {
+                SelectedContext = selectedText;
+            }
+        }
+        catch (Exception)
+        {
+            // 读取失败时忽略
+        }
     }
 }

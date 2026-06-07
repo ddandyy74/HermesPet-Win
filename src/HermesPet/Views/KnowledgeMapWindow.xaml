@@ -1,6 +1,7 @@
 <Window x:Class="HermesPet.Views.KnowledgeMapWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:HermesPet.ViewModels"
         Title="知识图谱"
         Width="800"
         Height="600"
@@ -9,12 +10,14 @@
         Background="Transparent"
         Topmost="True"
         ShowInTaskbar="False"
-        ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
 
-    <!-- 知识图谱窗口（简化版） -->
+    <!-- 知识图谱窗口 -->
     <!-- 参考 macOS: CanvasView.swift（画布视图） -->
-    <!-- TODO: 实现完整的知识图谱可视化 -->
+
+    <Window.DataContext>
+        <vm:KnowledgeMapViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         <SolidColorBrush x:Key="WindowBackground" Color="#F0FFFFFF"/>
@@ -32,6 +35,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="48"/>
             </Grid.RowDefinitions>
 
             <!-- 顶部标题栏 -->
@@ -45,6 +49,18 @@
                               FontWeight="SemiBold"
                               VerticalAlignment="Center"/>
 
+                    <!-- 缩放控制 -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="−" Width="32" Height="32" Margin="4,0"
+                               Command="{Binding ZoomOutCommand}"
+                               Background="Transparent" BorderThickness="1" BorderBrush="#CCCCCC"/>
+                        <TextBlock Text="{Binding ZoomScale, StringFormat={}{0:P0}}"
+                                  VerticalAlignment="Center" Margin="8,0" Width="50" TextAlignment="Center"/>
+                        <Button Content="+" Width="32" Height="32" Margin="4,0"
+                               Command="{Binding ZoomInCommand}"
+                               Background="Transparent" BorderThickness="1" BorderBrush="#CCCCCC"/>
+                    </StackPanel>
+
                     <Button Content="✕"
                            Width="32"
                            Height="32"
@@ -57,29 +73,81 @@
                 </Grid>
             </Border>
 
-            <!-- 内容区域（占位符） -->
-            <Grid Grid.Row="1" Margin="24">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="🗺️"
-                              FontSize="48"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,16"/>
-
-                    <TextBlock Text="知识图谱功能正在开发中"
-                              FontSize="18"
-                              FontWeight="SemiBold"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,8"/>
-
-                    <TextBlock Text="此功能将展示对话中的知识点关系图谱"
-                              FontSize="13"
-                              Foreground="#666666"
-                              HorizontalAlignment="Center"
-                              TextWrapping="Wrap"
-                              TextAlignment="Center"
-                              MaxWidth="400"/>
-                </StackPanel>
+            <!-- 内容区域：知识图谱 Canvas -->
+            <Grid Grid.Row="1" x:Name="GraphContainer">
+                <Canvas x:Name="GraphCanvas"
+                       Background="Transparent"
+                       MouseWheel="GraphCanvas_MouseWheel"
+                       MouseLeftButtonDown="GraphCanvas_MouseLeftButtonDown"
+                       MouseLeftButtonUp="GraphCanvas_MouseLeftButtonUp"
+                       MouseMove="GraphCanvas_MouseMove"/>
+                
+                <!-- 加载提示 -->
+                <TextBlock Text="加载中..."
+                          FontSize="16"
+                          Foreground="#666666"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
+
+            <!-- 底部信息栏 -->
+            <Border Grid.Row="2"
+                    Background="#FAFAFA"
+                    BorderBrush="#EEEEEE"
+                    BorderThickness="0,1,0,0"
+                    CornerRadius="0,0,12,12">
+                <Grid Margin="16,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="节点: " Foreground="#666666" FontSize="12"/>
+                        <TextBlock Text="{Binding Nodes.Count}" FontWeight="SemiBold" FontSize="12" Margin="0,0,16,0"/>
+                        <TextBlock Text="关系: " Foreground="#666666" FontSize="12"/>
+                        <TextBlock Text="{Binding Edges.Count}" FontWeight="SemiBold" FontSize="12"/>
+                        
+                        <!-- 选中节点信息 -->
+                        <TextBlock Text="选中: " Foreground="#666666" FontSize="12" Margin="16,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedNode}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding SelectedNode.Label}" FontWeight="SemiBold" FontSize="12">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedNode}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                    
+                    <TextBlock Text="按住鼠标拖动平移 | 滚轮缩放 | 点击节点查看详情"
+                              Foreground="#999999"
+                              FontSize="11"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
         </Grid>
     </Border>
 </Window>
