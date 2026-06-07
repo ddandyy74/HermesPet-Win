@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using HermesPet.Models;
 using HermesPet.Services;
 using HermesPet.ViewModels;
 using HermesPet.Views;
@@ -24,6 +25,10 @@ public partial class App : System.Windows.Application
     // 宠物窗口相关
     private PetViewModel? _petViewModel;
     private PetWindow? _petWindow;
+
+    // 快速询问窗口相关
+    private QuickAskViewModel? _quickAskViewModel;
+    private QuickAskWindow? _quickAskWindow;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -83,6 +88,11 @@ public partial class App : System.Windows.Application
         _hotkeyService.ToggleWindowHotkeyPressed += OnToggleWindowHotkeyPressed;
         _hotkeyService.NewConversationHotkeyPressed += OnNewConversationHotkeyPressed;
         _hotkeyService.VoiceInputHotkeyPressed += OnVoiceInputHotkeyPressed;
+        _hotkeyService.QuickAskHotkeyPressed += OnQuickAskHotkeyPressed;
+        
+        // 初始化快速询问窗口
+        _quickAskViewModel = new QuickAskViewModel(_aiClient);
+        _quickAskWindow = new QuickAskWindow(_quickAskViewModel);
         
         // 显示主窗口（必须在窗口显示后设置热键服务，因为需要窗口句柄）
         _mainWindow.Show();
@@ -154,6 +164,28 @@ public partial class App : System.Windows.Application
         else
         {
             _chatViewModel.StartVoiceInputCommand.Execute(null);
+        }
+    }
+
+    /// <summary>
+    /// 快速询问热键处理（Ctrl+Shift+Space）。
+    /// 切换快速询问窗口显示/隐藏。
+    /// </summary>
+    private void OnQuickAskHotkeyPressed(object? sender, System.EventArgs e)
+    {
+        if (_quickAskWindow == null || _quickAskViewModel == null)
+            return;
+
+        if (_quickAskWindow.IsVisible)
+        {
+            _quickAskWindow.Hide();
+        }
+        else
+        {
+            // 重置状态并显示
+            _quickAskViewModel.Reset();
+            _quickAskViewModel.CurrentMode = _chatViewModel?.AgentMode ?? AgentMode.Hermes;
+            _quickAskWindow.Show();
         }
     }
 

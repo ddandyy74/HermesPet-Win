@@ -646,24 +646,44 @@
 
 ---
 
-### M4.3 快速询问+置顶卡片+知识云图（Day 14-18）
+### M4.3 快速询问+置顶卡片+知识云图（Day 14-18）⚠️ 部分完成
 
 **交付物：**
-- [ ] `Views/QuickAskWindow.xaml` — Spotlight 风格浮动窗口
-- [ ] `Windows/QuickAskWindow.cs` — Ctrl+Shift+Space 触发
+- [x] `ViewModels/QuickAskViewModel.cs` — 状态管理 + 流式回答
+- [x] `Windows/QuickAskWindow.xaml` — Spotlight 风格浮动窗口
+- [x] Ctrl+Shift+Space 触发 — 全局热键集成
 - [ ] `Views/PinCardWindow.xaml` — 置顶卡片窗口
 - [ ] Ctrl+Shift+P 触发置顶
 - [ ] `Views/KnowledgeMapWindow.xaml` — 知识云图可视化
 - [ ] Ctrl+Shift+G 触发知识云图
 
 **验收标准：**
-- 快速询问浮窗居中显示，按 Escape 关闭
-- 置顶卡片可拖动，内容固定在桌面
-- 知识云图显示对话关键词关系
+- ✅ 快速询问浮窗居中显示，按 Escape 关闭
+- ⬜ 置顶卡片可拖动，内容固定在桌面
+- ⬜ 知识云图显示对话关键词关系
+
+**验收结果：** ✅ 部分完成（快速询问窗口已实现）
+- ✅ Spotlight 风格浮窗 UI（680pt 宽毛玻璃）
+- ✅ 流式回答显示（30fps 更新频率）
+- ✅ 全局热键 Ctrl+Shift+Space
+- ✅ 复制到剪贴板功能
+- ⚠️ 选中文本读取未实现（需要 Windows Accessibility API）
+- ⚠️ Pin 功能为占位符（需要 PinCardWindow）
+- ⚠️ 迁移到聊天窗口为占位符（需要 ChatViewModel 支持）
+
+**关键约束验证：**
+- ✅ TDR-006：所有 UI 更新使用 Dispatcher.InvokeAsync
+- ✅ 编译：0 错误，4 警告（非阻塞）
+
+**技术亮点：**
+1. **UI 设计**：透明背景、无边框、置顶、毛玻璃效果
+2. **流式生成**：IAsyncEnumerable + CancellationToken
+3. **上下文拼接**：参考 macOS composePrompt 方法
+4. **热键集成**：HotkeyService + App.xaml.cs
 
 **依赖：** M1, M3, M4.0
 
-**参考 macOS：** `QuickAskWindow.swift`、`PinCardOverlay.swift`、`CanvasView.swift`
+**参考 macOS：** `QuickAskWindow.swift`（651 行）
 
 ---
 

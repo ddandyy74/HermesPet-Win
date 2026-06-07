@@ -30,11 +30,13 @@ namespace HermesPet.Services
         private const int VK_H = 0x48;
         private const int VK_J = 0x4A;
         private const int VK_V = 0x56;
+        private const int VK_SPACE = 0x20;
 
         // 热键 ID
         private const int HOTKEY_TOGGLE_WINDOW = 9001;
         private const int HOTKEY_NEW_CONVERSATION = 9002;
         private const int HOTKEY_VOICE_INPUT = 9003;
+        private const int HOTKEY_QUICK_ASK = 9004;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
@@ -60,6 +62,11 @@ namespace HermesPet.Services
         /// 语音输入热键触发事件（切换录音状态）。
         /// </summary>
         public event EventHandler? VoiceInputHotkeyPressed;
+
+        /// <summary>
+        /// 快速询问热键触发事件（Ctrl+Shift+Space）。
+        /// </summary>
+        public event EventHandler? QuickAskHotkeyPressed;
 
         #endregion
 
@@ -104,6 +111,13 @@ namespace HermesPet.Services
                 failures.Add($"Ctrl+Shift+V（错误码: {error}）");
             }
 
+            // Ctrl+Shift+Space → 快速询问
+            if (!RegisterHotKey(_windowHandle, HOTKEY_QUICK_ASK, MOD_CONTROL | MOD_SHIFT, VK_SPACE))
+            {
+                var error = Marshal.GetLastWin32Error();
+                failures.Add($"Ctrl+Shift+Space（错误码: {error}）");
+            }
+
             _isRegistered = true;
             return failures.ToArray();
         }
@@ -119,6 +133,7 @@ namespace HermesPet.Services
             UnregisterHotKey(_windowHandle, HOTKEY_TOGGLE_WINDOW);
             UnregisterHotKey(_windowHandle, HOTKEY_NEW_CONVERSATION);
             UnregisterHotKey(_windowHandle, HOTKEY_VOICE_INPUT);
+            UnregisterHotKey(_windowHandle, HOTKEY_QUICK_ASK);
             _isRegistered = false;
         }
 
@@ -147,6 +162,10 @@ namespace HermesPet.Services
 
                     case HOTKEY_VOICE_INPUT:
                         VoiceInputHotkeyPressed?.Invoke(this, EventArgs.Empty);
+                        return true;
+
+                    case HOTKEY_QUICK_ASK:
+                        QuickAskHotkeyPressed?.Invoke(this, EventArgs.Empty);
                         return true;
                 }
             }

@@ -320,10 +320,29 @@
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
-| M4.3.1 | `Views/QuickAskWindow.xaml` | QuickAskWindow.swift | ⬜ | Ctrl+Shift+Space |
-| M4.3.2 | `Windows/QuickAskWindow.cs` | QuickAskWindow.swift | ⬜ | |
-| M4.3.3 | `Views/PinCardWindow.xaml` | PinCardOverlay.swift | ⬜ | Ctrl+Shift+P |
-| M4.3.4 | `Views/KnowledgeMapWindow.xaml` | CanvasView.swift | ⬜ | Ctrl+Shift+G |
+| M4.3.1 | `ViewModels/QuickAskViewModel.cs` | QuickAskWindow.swift | ✅ | 状态管理 + 流式回答 |
+| M4.3.2 | `Windows/QuickAskWindow.xaml` | QuickAskWindow.swift | ✅ | Spotlight 风格浮窗 UI |
+| M4.3.3 | Ctrl+Shift+Space 热键 | QuickAskWindow.swift | ✅ | 全局热键集成 |
+| M4.3.4 | `Views/PinCardWindow.xaml` | PinCardOverlay.swift | ⬜ | Ctrl+Shift+P |
+| M4.3.5 | `Views/KnowledgeMapWindow.xaml` | CanvasView.swift | ⬜ | Ctrl+Shift+G |
+
+**验收结果：** ✅ 部分完成（快速询问窗口已实现）
+- ✅ Spotlight 风格浮窗 UI（680pt 宽毛玻璃）
+- ✅ 流式回答显示（30fps 更新频率）
+- ✅ 全局热键 Ctrl+Shift+Space
+- ✅ 复制到剪贴板功能
+- ⚠️ 选中文本读取未实现（需要 Windows Accessibility API）
+- ⚠️ Pin 功能为占位符（需要 PinCardWindow）
+- ⚠️ 迁移到聊天窗口为占位符（需要 ChatViewModel 支持）
+
+**技术要点：**
+- **UI 设计**：透明背景、无边框、置顶、毛玻璃效果
+- **流式生成**：IAsyncEnumerable + CancellationToken
+- **上下文拼接**：参考 macOS composePrompt 方法
+- **热键集成**：HotkeyService + App.xaml.cs
+
+**参考 macOS 文件：**
+- `reference-mac/Sources/QuickAskWindow.swift`（651 行）
 
 **依赖：** M1, M3, M4.0
 
