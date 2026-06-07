@@ -483,11 +483,18 @@ public partial class AboutSectionViewModel : ObservableObject
         UpdateStatus = "正在检查更新...";
         UpdateStatusColor = "#666666";
 
-        // TODO: 调用 UpdateService 检查 GitHub Releases
-        await Task.Delay(1000);
+        await UpdateService.Instance.CheckForUpdateAsync(silently: false);
 
-        UpdateStatus = "当前已是最新版本";
-        UpdateStatusColor = "#4CAF50";
+        if (UpdateService.Instance.HasUpdate)
+        {
+            UpdateStatus = $"发现新版本 {UpdateService.Instance.LatestVersion}";
+            UpdateStatusColor = "#FF9800";
+        }
+        else
+        {
+            UpdateStatus = "当前已是最新版本";
+            UpdateStatusColor = "#4CAF50";
+        }
     }
 
     /// <summary>

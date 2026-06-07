@@ -142,7 +142,7 @@ public class UpdateService
             LastCheckedAt = DateTime.Now;
 
             // 触发事件
-            if (HasUpdate)
+            if (HasUpdate && LatestVersion != null)
             {
                 UpdateAvailable?.Invoke(this, new UpdateAvailableEventArgs(LatestVersion, LatestDownloadUrl, LatestNotes));
             }
