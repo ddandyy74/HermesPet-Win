@@ -85,7 +85,7 @@
                 <!-- AI 后端 -->
                 <Button Style="{StaticResource SidebarButtonStyle}" Command="{Binding SelectCategoryCommand}" CommandParameter="Backend" Margin="0,0,0,2">
                     <StackPanel Orientation="Horizontal" Margin="9,0,0,0">
-                        <TextBlock Text="⚙" FontSize="13" Width="18" Foreground="{Binding CategoryIconColor}"/>
+                        <TextBlock Text="⚙" FontSize="13" Width="18" Foreground="#607D8B"/>
                         <TextBlock Text="AI 后端" FontSize="13" Margin="9,0,0,0"/>
                     </StackPanel>
                 </Button>

@@ -109,6 +109,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- 当前会话标题 -->
@@ -123,7 +124,8 @@
                     <ComboBox Grid.Column="1"
                              SelectedIndex="0"
                              Width="150"
-                             VerticalAlignment="Center">
+                             VerticalAlignment="Center"
+                             Margin="0,0,8,0">
                         <ComboBoxItem Content="⚡ Hermes"/>
                         <ComboBoxItem Content="🌐 在线 AI"/>
                         <ComboBoxItem Content="🦀 OpenClaw"/>
