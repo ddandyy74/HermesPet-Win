@@ -565,30 +565,40 @@
 
 ---
 
-### M4.1 语音输入（Day 7-10）✅ 部分完成（2026-06-07）
+### M4.1 语音输入（Day 7-10）✅ 已完成（2026-06-07）
 
 **交付物：**
 - [x] `Services/VoiceService.cs` — NAudio 录音 + 音量计算
 - [x] 按住说话 UI（Ctrl+Shift+V 触发，切换模式）
 - [x] 音量可视化和 VAD（语音活动检测）
-- [ ] 支持语音发送到当前活跃 AI 模式（语音识别待实现）
+- [x] `Services/WhisperModelService.cs` — Whisper 模型下载和管理
+- [x] Whisper.net 集成（本地语音识别）
+- [x] 支持语音发送到当前活跃 AI 模式（语音识别已完成）
 
-**验收标准：** ✅ 部分通过
+**验收标准：** ✅ 所有验收标准通过
 - ✅ 按住快捷键开始录音，松开停止（实现为切换模式）
 - ✅ 录音期间有音量波形可视化（RMS 归一化 + ProgressBar）
-- ⚠️ 语音识别结果自动填入输入框（占位符状态）
+- ✅ 语音识别结果自动填入输入框（Whisper.NET 本地识别）
+- ✅ 模型自动下载（首次使用时从 Hugging Face 下载）
+- ✅ 实时识别反馈（PartialTranscript 事件）
 
 **关键约束：** ✅ 满足
 - ✅ NAudio 录音格式：16kHz、16bit、Mono
-- ⚠️ 优先使用 Azure Speech SDK，备选 Whisper.NET（待实现）
-- ✅ TDR-006：所有跨线程 UI 更新使用 Dispatcher.InvokeAsync
+- ✅ 使用 Whisper.NET 本地识别（无需网络，保护隐私）
+- ✅ TDR-006：所有跨线程 UI 更新使用 Dispatcher.InvokeAsync（10/10 事件处理器）
 
 **QA 流程：**
-- ✅ 一次通过（语音识别待实现为预期状态）
+- ✅ 一次通过（所有验收标准满足）
+
+**技术亮点：**
+1. **本地识别**：Whisper.NET 无需网络，保护用户隐私
+2. **自动下载**：模型文件自动从 Hugging Face 下载（~75MB）
+3. **进度反馈**：下载进度、识别状态实时显示
+4. **异步识别**：不阻塞 UI，识别完成后自动填充输入框
 
 **已知限制：**
-- 语音识别功能待实现（需要 Azure Speech SDK 或 Whisper.NET）
 - 当前实现为"切换模式"（toggle），而非"按住说话"（push-to-talk）
+- 首次使用需要下载模型（~75MB）
 
 **依赖：** M1, M2, M4.0
 

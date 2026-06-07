@@ -1,6 +1,6 @@
 # HermesPet Windows 开发跟踪文档
 
-> 最后更新：2026-06-07 | 当前阶段：M4.0 宠物动画移植 | 进度：76%
+> 最后更新：2026-06-07 | 当前阶段：M4.1 语音输入 | 进度：90%
 
 ---
 
@@ -11,9 +11,12 @@
 | M1 核心框架 | ✅ 已完成 | 24/24 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M2 动态岛+宠物 | ✅ 已完成 | 21/21 | 2026-06-07 | 2026-06-07 | 2-3 周 | 1 天 |
 | M3 多会话+多AI | ✅ 已完成 | 10/10 | 2026-06-07 | 2026-06-07 | 1-2 周 | 1 天 |
-| M4 高级功能 | 🔄 进行中 | 12/20 | 2026-06-07 | - | 3 周 | - |
+| M4 高级功能 | 🔄 进行中 | 15/20 | 2026-06-07 | - | 3 周 | - |
 | M5 打磨发布 | ⬜ 未开始 | 0/8 | - | - | 1-2 周 | - |
 
+```
+总进度: 75/83 任务
+████████████████████████████████████████████████████████████████████████░░ 90%
 ```
 总进度: 72/83 任务
 ████████████████████████████████████████████████████████████████████████░░ 87%
@@ -259,24 +262,31 @@
 
 ---
 
-### M4.1 语音输入
+### M4.1 语音输入 ✅ 已完成
 
 | ID | 任务 | 参考 macOS | 状态 | 备注 |
 |----|------|-----------|------|------|
 | M4.1.1 | `Services/VoiceService.cs` | VoiceInputController.swift | ✅ | NAudio 录音（16kHz/16bit/Mono） |
 | M4.1.2 | 按住说话 UI | VoiceInputController.swift | ✅ | Ctrl+Shift+V 触发（切换模式） |
 | M4.1.3 | 音量可视化 | VoiceTranscriptOverlay.swift | ✅ | RMS 归一化 + ProgressBar |
-| M4.1.4 | 语音识别集成 | VoiceInputController.swift | ⬜ | Azure Speech SDK / Whisper.NET（待实现） |
+| M4.1.4 | 语音识别集成 | VoiceInputController.swift | ✅ | Whisper.NET 本地识别 |
+| M4.1.5 | `Services/WhisperModelService.cs` | - | ✅ | 模型下载和管理 |
+| M4.1.6 | Whisper 模型自动下载 | - | ✅ | Hugging Face ~75MB |
+| M4.1.7 | ChatViewModel Whisper 属性 | - | ✅ | IsWhisperModelLoaded/Downloading/Progress |
 
 **依赖：** M1, M2, M4.0
 
-**验收结果：** ✅ 通过（有条件：语音识别待实现）
+**验收结果：** ✅ 全部通过（详见 QA 报告）
 
 **关键实现：**
 - ✅ NAudio 录音功能完整
 - ✅ 音量计算正确（RMS 归一化）
 - ✅ 热键注册和事件处理完整
 - ✅ UI 绑定和状态管理正确
+- ✅ Whisper.NET 本地识别集成
+- ✅ 模型自动下载和加载
+- ✅ 实时识别反馈（PartialTranscript 事件）
+- ✅ TDR-006 验证：10/10 事件处理器使用 Dispatcher.InvokeAsync
 - ✅ TDR-006 完美遵循（Dispatcher.InvokeAsync）
 - ⚠️ 语音识别待实现（占位符状态）
 

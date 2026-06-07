@@ -181,13 +181,20 @@ public sealed class VoiceService : IDisposable
         // 停止录音
         _waveIn?.StopRecording();
 
-        // 保存录音文件（供后续语音识别使用）
-        if (_waveWriter != null && _audioBuffer != null && !string.IsNullOrEmpty(_tempFilePath))
+        // 保存录音数据并进行语音识别
+        byte[]? audioData = null;
+        if (_waveWriter != null && _audioBuffer != null)
         {
             try
             {
                 _waveWriter.Dispose();
-                File.WriteAllBytes(_tempFilePath, _audioBuffer.ToArray());
+                audioData = _audioBuffer.ToArray();
+                
+                // 保存到临时文件（可选，用于调试）
+                if (!string.IsNullOrEmpty(_tempFilePath))
+                {
+                    File.WriteAllBytes(_tempFilePath, audioData);
+                }
             }
             catch
             {
@@ -195,12 +202,49 @@ public sealed class VoiceService : IDisposable
             }
         }
 
-        // TODO: 调用语音识别 API（Azure Speech SDK 或 Whisper.NET）
-        // 目前返回占位文本
-        finalText = "[语音识别功能待实现]";
+        // 异步执行语音识别（不阻塞 UI）
+        if (audioData != null && audioData.Length > 44) // WAV 头部 44 字节
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    // 确保模型已加载
+                    var whisperService = WhisperModelService.Instance;
+                    await whisperService.EnsureModelReadyAsync();
+                    
+                    // 触发部分识别结果（实时反馈）
+                    PartialTranscript?.Invoke(this, "正在识别...");
+                    
+                    // 执行识别
+                    var recognizedText = await whisperService.RecognizeAsync(audioData);
+                    
+                    // 更新最终结果
+                    if (!string.IsNullOrWhiteSpace(recognizedText))
+                    {
+                        finalText = recognizedText;
+                        RecordingStopped?.Invoke(this, finalText);
+                    }
+                    else
+                    {
+                        RecordingStopped?.Invoke(this, "[未识别到语音]");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    RecognitionError?.Invoke(this, $"语音识别失败: {ex.Message}");
+                    RecordingStopped?.Invoke(this, "");
+                }
+            });
+        }
+        else
+        {
+            // 录音时间太短，直接返回空
+            CleanupResources();
+            RecordingStopped?.Invoke(this, "");
+        }
 
         CleanupResources();
-        RecordingStopped?.Invoke(this, finalText);
         return finalText;
     }
 

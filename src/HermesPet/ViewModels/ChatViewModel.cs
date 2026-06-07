@@ -130,6 +130,24 @@ public partial class ChatViewModel : ObservableObject
     private float _volumeLevel = 0;
 
     /// <summary>
+    /// Whisper 模型是否已加载
+    /// </summary>
+    [ObservableProperty]
+    private bool _isWhisperModelLoaded = false;
+
+    /// <summary>
+    /// Whisper 模型是否正在下载
+    /// </summary>
+    [ObservableProperty]
+    private bool _isWhisperModelDownloading = false;
+
+    /// <summary>
+    /// Whisper 模型下载进度（0-100）
+    /// </summary>
+    [ObservableProperty]
+    private int _whisperModelDownloadProgress = 0;
+
+    /// <summary>
     /// 是否正在加载（computed property）
     /// </summary>
     public bool IsLoading
@@ -243,6 +261,16 @@ public partial class ChatViewModel : ObservableObject
         voiceService.RecordingCancelled += OnRecordingCancelled;
         voiceService.RecognitionError += OnRecognitionError;
         voiceService.PartialTranscript += OnPartialTranscript;
+
+        // 连接 Whisper 模型服务事件
+        var whisperService = WhisperModelService.Instance;
+        whisperService.DownloadProgressChanged += OnWhisperDownloadProgressChanged;
+        whisperService.ModelDownloadCompleted += OnWhisperModelDownloadCompleted;
+        whisperService.ModelLoaded += OnWhisperModelLoaded;
+        whisperService.ErrorOccurred += OnWhisperErrorOccurred;
+        
+        // 检查模型状态
+        IsWhisperModelLoaded = whisperService.IsModelLoaded;
 
         // 创建初始对话
         if (Conversations.Count == 0)
@@ -559,6 +587,53 @@ public partial class ChatViewModel : ObservableObject
         {
             // 实时显示部分识别结果（可选）
             // InputText = partialText;
+        });
+    }
+
+    /// <summary>
+    /// Whisper 模型下载进度变化事件处理
+    /// </summary>
+    private void OnWhisperDownloadProgressChanged(object? sender, int progress)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            WhisperModelDownloadProgress = progress;
+        });
+    }
+
+    /// <summary>
+    /// Whisper 模型下载完成事件处理
+    /// </summary>
+    private void OnWhisperModelDownloadCompleted(object? sender, EventArgs e)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsWhisperModelDownloading = false;
+            WhisperModelDownloadProgress = 100;
+        });
+    }
+
+    /// <summary>
+    /// Whisper 模型加载完成事件处理
+    /// </summary>
+    private void OnWhisperModelLoaded(object? sender, EventArgs e)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsWhisperModelLoaded = true;
+            IsWhisperModelDownloading = false;
+        });
+    }
+
+    /// <summary>
+    /// Whisper 错误事件处理
+    /// </summary>
+    private void OnWhisperErrorOccurred(object? sender, string errorMessage)
+    {
+        System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            IsWhisperModelDownloading = false;
+            ErrorMessage = errorMessage;
         });
     }
 
