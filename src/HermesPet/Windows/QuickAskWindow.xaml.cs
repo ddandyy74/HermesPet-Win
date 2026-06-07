@@ -25,10 +25,6 @@ public partial class QuickAskWindow : Window
         _viewModel = viewModel;
         DataContext = _viewModel;
 
-        // 添加转换器
-        Resources["StringToVisibilityConverter"] = new StringToVisibilityConverter();
-        Resources["BooleanToVisibilityConverter"] = new BooleanToVisibilityConverter();
-
         // 窗口关闭时取消流式生成
         Closed += OnWindowClosed;
     }
@@ -90,37 +86,5 @@ public partial class QuickAskWindow : Window
     private void OnWindowClosed(object? sender, System.EventArgs e)
     {
         _viewModel.Cancel();
-    }
-}
-
-/// <summary>
-/// 字符串到可见性转换器（非空字符串显示）
-/// </summary>
-public class StringToVisibilityConverter : System.Windows.Data.IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
-        return string.IsNullOrEmpty(value as string) ? Visibility.Collapsed : Visibility.Visible;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// 布尔值到可见性转换器
-/// </summary>
-public class BooleanToVisibilityConverter : System.Windows.Data.IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
-        return (value is bool b && b) ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
-        throw new NotImplementedException();
     }
 }

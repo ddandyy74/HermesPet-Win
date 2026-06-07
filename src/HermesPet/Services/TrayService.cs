@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
+using HermesPet.Views;
 
 namespace HermesPet.Services;
 
@@ -18,6 +19,7 @@ public class TrayService : IDisposable
 {
     private readonly NotifyIcon _notifyIcon;
     private readonly Window _mainWindow;
+    private SettingsWindow? _settingsWindow;
     private bool _isDisposed;
 
     /// <summary>
@@ -70,6 +72,10 @@ public class TrayService : IDisposable
         // 显示/隐藏窗口
         var showHideItem = new ToolStripMenuItem("显示窗口", null, (s, e) => ShowMainWindow());
         contextMenu.Items.Add(showHideItem);
+
+        // 设置
+        var settingsItem = new ToolStripMenuItem("设置", null, (s, e) => ShowSettingsWindow());
+        contextMenu.Items.Add(settingsItem);
 
         contextMenu.Items.Add(new ToolStripSeparator());
 
@@ -141,6 +147,27 @@ public class TrayService : IDisposable
     public void ShowBalloonTip(string title, string text, ToolTipIcon icon, int timeout = 3000)
     {
         _notifyIcon.ShowBalloonTip(timeout, title, text, icon);
+    }
+
+    /// <summary>
+    /// 显示设置窗口
+    /// </summary>
+    public void ShowSettingsWindow()
+    {
+        if (_settingsWindow == null || !_settingsWindow.IsLoaded)
+        {
+            _settingsWindow = new SettingsWindow();
+            _settingsWindow.Show();
+        }
+        else
+        {
+            // 窗口已存在 → 激活窗口
+            if (_settingsWindow.WindowState == WindowState.Minimized)
+            {
+                _settingsWindow.WindowState = WindowState.Normal;
+            }
+            _settingsWindow.Activate();
+        }
     }
 
     /// <summary>

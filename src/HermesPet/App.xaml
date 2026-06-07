@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:HermesPet"
              xmlns:windows="clr-namespace:HermesPet.Windows"
+             xmlns:converters="clr-namespace:HermesPet.Converters"
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <!-- 状态转换器 -->
@@ -10,5 +11,9 @@
         <windows:StateToVisibilityConverter x:Key="StateToVisibilityConverter"/>
         <windows:ConnectionStatusToColorConverter x:Key="ConnectionStatusToColorConverter"/>
         <windows:AgentModeToLabelConverter x:Key="AgentModeToLabelConverter"/>
+        
+        <!-- 通用转换器 -->
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Application.Resources>
 </Application>
