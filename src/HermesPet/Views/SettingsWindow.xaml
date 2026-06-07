@@ -1,0 +1,333 @@
+<Window x:Class="HermesPet.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HermesPet.Views"
+        xmlns:vm="clr-namespace:HermesPet.ViewModels"
+        mc:Ignorable="d"
+        Title="HermesPet 设置"
+        Height="460"
+        Width="620"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        WindowStyle="SingleBorderWindow">
+    
+    <Window.Resources>
+        <!-- 侧栏按钮样式 -->
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="6">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                </Trigger>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="#2196F3"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- 设置卡片样式 -->
+        <Style x:Key="SettingsCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <!-- 标题文本样式 -->
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="21"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,2,0,18"/>
+        </Style>
+        
+        <!-- 卡片标题样式 -->
+        <Style x:Key="CardTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        
+        <!-- 副标题样式 -->
+        <Style x:Key="SubtitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <!-- 左侧侧栏 -->
+        <Grid Width="156" HorizontalAlignment="Left" Background="#EBEBEB">
+            <StackPanel Margin="10,18,10,12">
+                <!-- AI 后端 -->
+                <Button Style="{StaticResource SidebarButtonStyle}" Command="{Binding SelectCategoryCommand}" CommandParameter="Backend" Margin="0,0,0,2">
+                    <StackPanel Orientation="Horizontal" Margin="9,0,0,0">
+                        <TextBlock Text="⚙" FontSize="13" Width="18" Foreground="{Binding CategoryIconColor}"/>
+                        <TextBlock Text="AI 后端" FontSize="13" Margin="9,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                
+                <!-- 桌宠 -->
+                <Button Style="{StaticResource SidebarButtonStyle}" Command="{Binding SelectCategoryCommand}" CommandParameter="Pet" Margin="0,0,0,2">
+                    <StackPanel Orientation="Horizontal" Margin="9,0,0,0">
+                        <TextBlock Text="🐾" FontSize="13" Width="18" Foreground="#E91E63"/>
+                        <TextBlock Text="桌宠" FontSize="13" Margin="9,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                
+                <!-- 系统 -->
+                <Button Style="{StaticResource SidebarButtonStyle}" Command="{Binding SelectCategoryCommand}" CommandParameter="System" Margin="0,0,0,2">
+                    <StackPanel Orientation="Horizontal" Margin="9,0,0,0">
+                        <TextBlock Text="🔧" FontSize="13" Width="18" Foreground="#9E9E9E"/>
+                        <TextBlock Text="系统" FontSize="13" Margin="9,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                
+                <!-- 关于 -->
+                <Button Style="{StaticResource SidebarButtonStyle}" Command="{Binding SelectCategoryCommand}" CommandParameter="About" Margin="0,0,0,2">
+                    <StackPanel Orientation="Horizontal" Margin="9,0,0,0">
+                        <TextBlock Text="ℹ" FontSize="13" Width="18" Foreground="#757575"/>
+                        <TextBlock Text="关于" FontSize="13" Margin="9,0,0,0"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+        
+        <!-- 分隔线 -->
+        <Border Width="1" HorizontalAlignment="Left" Margin="156,0,0,0" Background="#D0D0D0"/>
+        
+        <!-- 右侧详情区 -->
+        <ScrollViewer Margin="156,0,0,0" Padding="26,18" VerticalScrollBarVisibility="Auto">
+            <ContentControl Content="{Binding CurrentSection}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:BackendSectionViewModel}">
+                        <!-- AI 后端设置区 -->
+                        <StackPanel Margin="0,0,0,18">
+                            <TextBlock Text="AI 后端" Style="{StaticResource SectionTitleStyle}"/>
+                            
+                            <!-- AI 模式开关 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="AI 模式" Style="{StaticResource CardTitleStyle}"/>
+                                    <TextBlock Text="默认只开「在线 AI」。装了其他 AI 后，在这里启用。"
+                                               Style="{StaticResource SubtitleStyle}"/>
+                                    
+                                    <!-- 5 个模式开关 -->
+                                    <StackPanel Margin="0,0,0,8">
+                                        <!-- 在线 AI（永久启用） -->
+                                        <CheckBox Content="在线 AI（DeepSeek / Kimi 等）" IsChecked="True" IsEnabled="False"/>
+                                        
+                                        <!-- OpenClaw -->
+                                        <CheckBox Content="OpenClaw（本地知识库）" IsChecked="{Binding OpenClawEnabled}"/>
+                                        
+                                        <!-- Hermes -->
+                                        <CheckBox Content="Hermes（本地推理）" IsChecked="{Binding HermesEnabled}"/>
+                                        
+                                        <!-- Claude Code -->
+                                        <CheckBox Content="Claude Code（CLI）" IsChecked="{Binding ClaudeCodeEnabled}"/>
+                                        
+                                        <!-- Codex -->
+                                        <CheckBox Content="Codex（代码补全）" IsChecked="{Binding CodexEnabled}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- API 配置 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="在线 AI 配置" Style="{StaticResource CardTitleStyle}"/>
+                                    
+                                    <!-- 提供商选择 -->
+                                    <ComboBox ItemsSource="{Binding Providers}" SelectedItem="{Binding SelectedProvider}"
+                                              DisplayMemberPath="Name" Margin="0,0,0,8"/>
+                                    
+                                    <!-- API Key -->
+                                    <TextBlock Text="API Key:" Margin="0,0,0,4"/>
+                                    <PasswordBox Password="{Binding ApiKey}" Width="300" HorizontalAlignment="Left"/>
+                                    
+                                    <!-- 模型选择 -->
+                                    <TextBlock Text="模型:" Margin="0,8,0,4"/>
+                                    <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel}"
+                                              Width="300" HorizontalAlignment="Left"/>
+                                    
+                                    <!-- 测试连接 -->
+                                    <Button Content="测试连接" Command="{Binding TestConnectionCommand}"
+                                            Padding="12,6" Margin="0,12,0,0"/>
+                                    <TextBlock Text="{Binding TestResult}" Foreground="{Binding TestResultColor}"
+                                               Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 提示信息 -->
+                            <TextBlock Text="提示：每个对话独立绑定 mode，发出第一条消息后就锁定。如需用其他模型，新建对话。"
+                                       FontSize="10" Foreground="#999999" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:PetSectionViewModel}">
+                        <!-- 桌宠设置区 -->
+                        <StackPanel Margin="0,0,0,18">
+                            <TextBlock Text="桌宠" Style="{StaticResource SectionTitleStyle}"/>
+                            
+                            <!-- 宠物角色 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="宠物角色" Style="{StaticResource CardTitleStyle}"/>
+                                    <ComboBox ItemsSource="{Binding PetCharacters}" 
+                                              SelectedItem="{Binding SelectedPetCharacter}"
+                                              Width="300" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 动画速度 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="动画速度" Style="{StaticResource CardTitleStyle}"/>
+                                    <Slider Value="{Binding AnimationSpeed}" Minimum="0.5" Maximum="2.0" 
+                                            Width="300" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{Binding AnimationSpeedText}" Foreground="#666666"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 台词频率 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="台词频率" Style="{StaticResource CardTitleStyle}"/>
+                                    <ComboBox ItemsSource="{Binding QuoteFrequencyOptions}"
+                                              SelectedItem="{Binding SelectedQuoteFrequency}"
+                                              Width="300" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 静音模式 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <CheckBox Content="静音模式（禁用所有动效和台词）"
+                                           IsChecked="{Binding QuietMode}"/>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:SystemSectionViewModel}">
+                        <!-- 系统设置区 -->
+                        <StackPanel Margin="0,0,0,18">
+                            <TextBlock Text="系统" Style="{StaticResource SectionTitleStyle}"/>
+                            
+                            <!-- 热键配置 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="热键配置" Style="{StaticResource CardTitleStyle}"/>
+                                    <TextBlock Text="点击热键输入框，按下新的组合键即可修改。"
+                                               Style="{StaticResource SubtitleStyle}"/>
+                                    
+                                    <!-- 热键列表 -->
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="150"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0" Margin="0,0,0,6">
+                                            <TextBlock Text="显示/隐藏主窗口"/>
+                                            <TextBlock Text="新建对话"/>
+                                            <TextBlock Text="语音输入"/>
+                                            <TextBlock Text="快速询问"/>
+                                            <TextBlock Text="置顶卡片"/>
+                                            <TextBlock Text="知识图谱"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="1" Margin="0,0,0,6">
+                                            <TextBox Text="{Binding HotkeyMainWindow}" Width="140"/>
+                                            <TextBox Text="{Binding HotkeyNewConversation}" Width="140"/>
+                                            <TextBox Text="{Binding HotkeyVoiceInput}" Width="140"/>
+                                            <TextBox Text="{Binding HotkeyQuickAsk}" Width="140"/>
+                                            <TextBox Text="{Binding HotkeyPinCard}" Width="140"/>
+                                            <TextBox Text="{Binding HotkeyKnowledgeMap}" Width="140"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <Button Content="恢复默认热键" Command="{Binding ResetHotkeysCommand}"
+                                            Padding="12,6" Margin="0,12,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 开机自启 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <CheckBox Content="开机自动启动"
+                                           IsChecked="{Binding AutoStartEnabled}"/>
+                            </Border>
+                            
+                            <!-- 启动时隐藏 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <CheckBox Content="启动时隐藏主窗口"
+                                           IsChecked="{Binding StartHidden}"/>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:AboutSectionViewModel}">
+                        <!-- 关于设置区 -->
+                        <StackPanel Margin="0,0,0,18">
+                            <TextBlock Text="关于" Style="{StaticResource SectionTitleStyle}"/>
+                            
+                            <!-- 版本信息 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="HermesPet" FontSize="18" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Version}" FontSize="12" Foreground="#666666"/>
+                                    <TextBlock Text="Windows 版本（基于 macOS HermesPet）" FontSize="11" Foreground="#999999"/>
+                                    
+                                    <!-- 更新检查 -->
+                                    <Button Content="检查更新" Command="{Binding CheckUpdateCommand}"
+                                            Padding="12,6" Margin="0,12,0,0"/>
+                                    <TextBlock Text="{Binding UpdateStatus}" Foreground="{Binding UpdateStatusColor}"
+                                               Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 链接 -->
+                            <Border Style="{StaticResource SettingsCardStyle}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="相关链接" Style="{StaticResource CardTitleStyle}"/>
+                                    
+                                    <Button Content="GitHub 仓库" Command="{Binding OpenGitHubCommand}"
+                                            Padding="12,6"/>
+                                    <Button Content="官网" Command="{Binding OpenWebsiteCommand}"
+                                            Padding="12,6" Margin="0,6,0,0"/>
+                                    <Button Content="报告问题" Command="{Binding ReportIssueCommand}"
+                                            Padding="12,6" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- 版权信息 -->
+                            <TextBlock Text="© 2026 HermesPet Team"
+                                       FontSize="10" Foreground="#999999" TextAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </ScrollViewer>
+    </Grid>
+</Window>
