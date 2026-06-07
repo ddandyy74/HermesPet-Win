@@ -136,14 +136,27 @@ public abstract class AIClient
             });
         }
 
-        // 添加用户消息
-        // TODO: ChatMessage → APIMessage 转换需要处理 multimodal content（Images）
-        // 暂时只处理文本消息
-        apiMessages.AddRange(messages.Select(msg => new APIMessage
+        // 添加用户消息（支持多模态内容）
+        // TDR-008：根据 SupportsImages 决定图片传递方式
+        foreach (var msg in messages)
         {
-            Role = msg.Role.ToString().ToLowerInvariant(),
-            Content = msg.Content
-        }));
+            // 检查是否包含图片且客户端支持图片
+            if (msg.Images != null && msg.Images.Count > 0 && SupportsImages)
+            {
+                // 构建多模态消息（文本 + 图片）
+                var base64Images = msg.Images.Select(img => Convert.ToBase64String(img)).ToList();
+                apiMessages.Add(new APIMessage(msg.Role.ToString().ToLowerInvariant(), msg.Content, base64Images));
+            }
+            else
+            {
+                // 纯文本消息
+                apiMessages.Add(new APIMessage
+                {
+                    Role = msg.Role.ToString().ToLowerInvariant(),
+                    Content = msg.Content
+                });
+            }
+        }
 
         // 构建请求体
         var requestBody = new ChatCompletionRequest

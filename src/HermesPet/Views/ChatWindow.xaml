@@ -195,6 +195,32 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
+                     </Button>
+
+                    <!-- 截图按钮 -->
+                    <Button Grid.Column="0"
+                           Width="36"
+                           Height="36"
+                           Margin="44,0,8,0"
+                           VerticalAlignment="Center"
+                           Command="{Binding CaptureScreenCommand}"
+                           ToolTip="截取全屏 (Ctrl+Shift+S)"
+                           Background="#F5F5F5"
+                           BorderBrush="#E0E0E0"
+                           BorderThickness="1">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                       BorderBrush="{TemplateBinding BorderBrush}"
+                                       BorderThickness="{TemplateBinding BorderThickness}"
+                                       CornerRadius="4">
+                                    <TextBlock Text="📷"
+                                              FontSize="16"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
 
                     <!-- 输入框 -->

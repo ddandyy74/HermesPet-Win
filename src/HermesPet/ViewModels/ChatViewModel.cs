@@ -148,6 +148,11 @@ public partial class ChatViewModel : ObservableObject
     private int _whisperModelDownloadProgress = 0;
 
     /// <summary>
+    /// 待发送的图片数据（截图功能）
+    /// </summary>
+    private readonly List<byte[]> _pendingImages = new();
+
+    /// <summary>
     /// 是否正在加载（computed property）
     /// </summary>
     public bool IsLoading
@@ -290,7 +295,10 @@ public partial class ChatViewModel : ObservableObject
     private async Task SendMessageAsync()
     {
         var text = InputText.Trim();
-        if (string.IsNullOrWhiteSpace(text)) return;
+        var hasImages = _pendingImages.Count > 0;
+        
+        // 如果既没有文本也没有图片，直接返回
+        if (string.IsNullOrWhiteSpace(text) && !hasImages) return;
 
         // 清空输入框
         InputText = string.Empty;
@@ -306,13 +314,17 @@ public partial class ChatViewModel : ObservableObject
             return;
         }
 
-        // 添加用户消息
+        // 添加用户消息（包含图片）
         var userMessage = new ChatMessage
         {
             Role = MessageRole.User,
-            Content = text
+            Content = text,
+            Images = new List<byte[]>(_pendingImages) // 复制待发送图片
         };
         activeConv.Messages.Add(userMessage);
+        
+        // 清空待发送图片
+        _pendingImages.Clear();
 
         // 自动生成标题（第一条用户消息时）
         AutoTitleIfNeeded(activeConv, text);
@@ -504,6 +516,97 @@ public partial class ChatViewModel : ObservableObject
         if (IsRecording)
         {
             VoiceService.Instance.CancelListening();
+        }
+    }
+
+    /// <summary>
+    /// 截取全屏并附加到消息
+    /// </summary>
+    [RelayCommand]
+    private async Task CaptureScreenAsync()
+    {
+        try
+        {
+            // 检查当前 AI 模式是否支持图片（TDR-008）
+            if (_aiClient != null && !_aiClient.SupportsImages)
+            {
+                ErrorMessage = $"当前 AI 模式（{AgentMode}）不支持图片输入";
+                return;
+            }
+
+            // 截取全屏
+            var result = await ScreenCaptureService.CaptureFullScreenAsync();
+            
+            if (result.Result == ScreenCaptureService.CaptureResult.Success && result.PngData != null)
+            {
+                // 将截图添加到待发送消息
+                // 用户可以在输入框中添加文本，然后一起发送
+                _pendingImages.Add(result.PngData);
+                
+                // 提示用户
+                ErrorMessage = "截图已添加，输入文本后发送（或直接发送）";
+            }
+            else if (result.Result == ScreenCaptureService.CaptureResult.NeedsPermission)
+            {
+                ErrorMessage = "需要屏幕录制权限才能截图";
+            }
+            else
+            {
+                ErrorMessage = result.ErrorMessage ?? "截图失败";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"截图失败: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// 截取当前窗口并附加到消息
+    /// </summary>
+    [RelayCommand]
+    private async Task CaptureWindowAsync()
+    {
+        try
+        {
+            // 检查当前 AI 模式是否支持图片（TDR-008）
+            if (_aiClient != null && !_aiClient.SupportsImages)
+            {
+                ErrorMessage = $"当前 AI 模式（{AgentMode}）不支持图片输入";
+                return;
+            }
+
+            // 获取当前活动窗口句柄
+            var activeWindow = GetActiveWindow();
+            if (activeWindow == IntPtr.Zero)
+            {
+                ErrorMessage = "无法获取活动窗口";
+                return;
+            }
+
+            // 截取窗口
+            var result = await ScreenCaptureService.CaptureWindowAsync(activeWindow);
+            
+            if (result.Result == ScreenCaptureService.CaptureResult.Success && result.PngData != null)
+            {
+                // 将截图添加到待发送消息
+                _pendingImages.Add(result.PngData);
+                
+                // 提示用户
+                ErrorMessage = "窗口截图已添加，输入文本后发送（或直接发送）";
+            }
+            else if (result.Result == ScreenCaptureService.CaptureResult.NeedsPermission)
+            {
+                ErrorMessage = "需要屏幕录制权限才能截图";
+            }
+            else
+            {
+                ErrorMessage = result.ErrorMessage ?? "截图失败";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"窗口截图失败: {ex.Message}";
         }
     }
 
@@ -971,6 +1074,13 @@ public partial class ChatViewModel : ObservableObject
         AgentMode.Codex => "gpt-4o",
         _ => "default"
     };
+
+    #endregion
+
+    #region Windows API
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr GetActiveWindow();
 
     #endregion
 }
